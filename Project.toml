@@ -1,0 +1,13 @@
+name = "AbstractItemResponseModels"
+uuid = "0ab3451c-659c-47cd-a7a9-a2d579e209dd"
+authors = ["Philipp Gewessler"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

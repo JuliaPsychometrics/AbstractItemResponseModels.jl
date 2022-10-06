@@ -11,7 +11,6 @@ export test_interface
     FakeIRM{RT<:ResponseType,PD<:Dimensionality,ID<:Dimensionality}
 
 A minimal implementation of [`ItemReponseModel`](@ref) for interface testing.
-
 """
 struct FakeIRM{RT<:ResponseType,PD<:Dimensionality,ID<:Dimensionality,ET<:EstimationType} <: ItemResponseModel
     betas::Vector{Float64}
@@ -42,6 +41,17 @@ function AbstractItemResponseModels.irf(model::FakeIRM{RT,PD,ID,SamplingEstimate
     return fill(0.0, nsamples)
 end
 
+function AbstractItemResponseModels.iif(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
+    checkresponsetype(RT, y)
+    return 1.0
+end
+
+function AbstractItemResponseModels.iif(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
+    checkresponsetype(RT, y)
+    nsamples = 10
+    return fill(1.0, nsamples)
+end
+
 function StatsBase.fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where {RT,PD,ID,ET}
     return FakeIRM{RT,PD,ID,ET}(data)
 end
@@ -57,6 +67,7 @@ function test_interface(T::Type{<:ItemResponseModel}, data; kwargs...)
 
         @testset "Interface" begin
             test_irf(model)
+            test_iif(model)
         end
     end
 end
@@ -85,7 +96,6 @@ function test_irf(model::ItemResponseModel)
     return test_irf(rt, pdim, idim, et, model)
 end
 
-
 function test_irf(rt::Type{Dichotomous}, pdim::Type{<:Dimensionality}, idim::Type{<:Dimensionality}, et::Type{<:EstimationType}, model)
     theta = sim_theta(pdim)
     @test irf(model, theta, 1, 0) isa out_type(et)
@@ -109,6 +119,39 @@ function test_irf(rt::Type{Continuous}, pdim::Type{<:Dimensionality}, idim::Type
     @test irf(model, theta, 1, 2.3) isa out_type(et)
     @test_throws Exception irf(model, theta, 1, 1im)
     @test_throws Exception irf(model, theta, 1, (0, 1))
+end
+
+function test_iif(model::ItemResponseModel)
+    rt = response_type(model)
+    pdim = person_dimensionality(model)
+    idim = item_dimensionality(model)
+    et = estimation_type(model)
+    return test_iif(rt, pdim, idim, et, model)
+end
+
+function test_iif(rt::Type{Dichotomous}, pdim::Type{<:Dimensionality}, idim::Type{<:Dimensionality}, et::Type{<:EstimationType}, model)
+    theta = sim_theta(pdim)
+    @test iif(model, theta, 1, 0.0) isa out_type(et)
+    @test iif(model, theta, 1, 1.0) isa out_type(et)
+    @test_throws DomainError iif(model, theta, 1, 0.5)
+    @test_throws DomainError iif(model, theta, 1, 2.0)
+end
+
+function test_iif(rt::Type{<:Union{Nominal,Ordinal}}, pdim::Type{<:Dimensionality}, idim::Type{<:Dimensionality}, et::Type{<:EstimationType}, model)
+    theta = sim_theta(pdim)
+    @test iif(model, theta, 1, 1.0) isa out_type(et)
+    @test iif(model, theta, 1, 2.0) isa out_type(et)
+    @test_throws DomainError iif(model, theta, 1, 2.5) isa out_type(et)
+    @test_throws DomainError iif(model, theta, 1, 0) isa out_type(et)
+end
+
+function test_iif(rt::Type{Continuous}, pdim::Type{<:Dimensionality}, idim::Type{<:Dimensionality}, et::Type{<:EstimationType}, model)
+    theta = sim_theta(pdim)
+    @test iif(model, theta, 1, 1.0) isa out_type(et)
+    @test iif(model, theta, 1, -2.0) isa out_type(et)
+    @test iif(model, theta, 1, 3.5) isa out_type(et)
+    @test_throws Exception iif(model, theta, 1, 1im)
+    @test_throws Exception iif(model, theta, 1, (0, 1))
 end
 
 sim_theta(::Type{Univariate}) = 0.0

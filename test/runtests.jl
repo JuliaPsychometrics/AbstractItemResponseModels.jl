@@ -1,6 +1,9 @@
 using AbstractItemResponseModels
+using AbstractItemResponseModels.Tests
+
 using Test
 
 @testset "AbstractItemResponseModels.jl" begin
-    # Write your tests here.
+    include("traits.jl")
+    include("test_interface.jl")
 end

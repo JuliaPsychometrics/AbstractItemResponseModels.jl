@@ -6,20 +6,20 @@ DocMeta.setdocmeta!(AbstractItemResponseModels, :DocTestSetup, :(using AbstractI
 makedocs(;
     modules=[AbstractItemResponseModels],
     authors="Philipp Gewessler",
-    repo="https://github.com/p-gw/AbstractItemResponseModels.jl/blob/{commit}{path}#{line}",
+    repo="https://github.com/JuliaPsychometrics/AbstractItemResponseModels.jl/blob/{commit}{path}#{line}",
     sitename="AbstractItemResponseModels.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://p-gw.github.io/AbstractItemResponseModels.jl",
+        canonical="https://JuliaPsychometrics.github.io/AbstractItemResponseModels.jl",
         edit_link="main",
-        assets=String[],
+        assets=String[]
     ),
     pages=[
         "Home" => "index.md",
-    ],
+    ]
 )
 
 deploydocs(;
-    repo="github.com/p-gw/AbstractItemResponseModels.jl",
-    devbranch="main",
+    repo="github.com/JuliaPsychometrics/AbstractItemResponseModels.jl",
+    devbranch="main"
 )

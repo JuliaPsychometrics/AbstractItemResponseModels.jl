@@ -4,7 +4,7 @@ CurrentModule = AbstractItemResponseModels
 
 # AbstractItemResponseModels
 
-Documentation for [AbstractItemResponseModels](https://github.com/p-gw/AbstractItemResponseModels.jl).
+Documentation for [AbstractItemResponseModels](https://github.com/JuliaPsychometrics/AbstractItemResponseModels.jl).
 
 ```@index
 ```

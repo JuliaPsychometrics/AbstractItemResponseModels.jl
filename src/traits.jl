@@ -13,6 +13,15 @@ Return the [`ResponseType`](@ref) of the [`ItemResponseModel`](@ref).
 response_type(::T) where {T} = response_type(T)
 response_type(T::Type) = throw(MethodError(response_type, (T,)))
 
+"""
+    checkresponsetype(::T, arr) where {T<:ResponseType}
+
+Check if the responses in `arr` are valid for [`ResponseType`](@ref) `T`.
+
+If all responses are valid, `nothing` is returned.
+
+If any invalid responses are found, a `DomainError` is thrown.
+"""
 checkresponsetype(::T, arr) where {T<:ResponseType} = checkresponsetype(T, arr)
 
 """
@@ -107,11 +116,36 @@ Defines that an [`ItemResponseModel`](@ref) has vector valued parameters.
 abstract type Multivariate <: Dimensionality end
 
 """
+    EstimationType
 
+The `EstimationType` of an [`ItemResponseModel`](@ref) describes the type of parameter
+estimation for the model.
 """
 abstract type EstimationType end
+
+"""
+    PointEstimate <: EstimationType
+
+Defines that the parameters of an [`ItemResponseModel`](@ref) are estimated by a single
+point estimate. Thus, parameters for a model with `estimation_type(model) == PointEstimate`
+are single real-valued numbers.
+"""
 abstract type PointEstimate <: EstimationType end
+
+"""
+    SamplingEstimate <: EstimationType
+
+Defines that the parameters of an [`ItemResponseModel`](@ref) are estimated by a sampling
+procedure. Thus, parameters for a model with `estimation_type(model) == SamplingEstimate`
+are vectors of real-valued numbers where the length of the parameter vector is equal to the
+number of samples drawn.
+"""
 abstract type SamplingEstimate <: EstimationType end
 
+"""
+    estimation_type(::T) -> EstimationType
+
+Return the [`EstimationType`](@ref) of an [`ItemResponseModel`].
+"""
 estimation_type(::T) where {T} = estimation_type(T)
 estimation_type(T::Type) = throw(MethodError(estimation_type, (T,)))

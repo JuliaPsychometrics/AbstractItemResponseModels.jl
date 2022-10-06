@@ -56,6 +56,11 @@ function StatsBase.fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where
     return FakeIRM{RT,PD,ID,ET}(data)
 end
 
+"""
+    test_interface(T::Type{<:ItemResponseModel}, data; kwargs...)
+
+A convenience function to test a custom implementation `T <: ItemResponseModel`.
+"""
 function test_interface(T::Type{<:ItemResponseModel}, data; kwargs...)
     @testset "AbstractItemResponseModels.jl API Tests" begin
 
@@ -71,14 +76,6 @@ function test_interface(T::Type{<:ItemResponseModel}, data; kwargs...)
         end
     end
 end
-
-function test_response_type(::Type{Dichotomous}) end
-function test_response_type(::Type{Nominal}) end
-function test_response_type(::Type{Ordinal}) end
-function test_response_type(::Type{Continuous}) end
-
-function test_dimensionality_type(::Type{Univariate}) end
-function test_dimensionality_type(::Type{Multivariate}) end
 
 function test_traits(model)
     @testset "Traits" begin

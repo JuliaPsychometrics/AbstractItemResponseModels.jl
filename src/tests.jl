@@ -61,10 +61,10 @@ end
 
 A convenience function to test a custom implementation `T <: ItemResponseModel`.
 """
-function test_interface(T::Type{<:ItemResponseModel}, data; kwargs...)
+function test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
     @testset "AbstractItemResponseModels.jl API Tests" begin
 
-        model = fit(T, data; kwargs...)
+        model = fit(T, data, args...; kwargs...)
         @test model isa ItemResponseModel
         @test model isa T
 

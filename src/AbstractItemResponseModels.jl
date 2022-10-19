@@ -1,5 +1,7 @@
 module AbstractItemResponseModels
 
+import StatsAPI: fit, predict
+
 export ItemResponseModel
 
 export irf, iif
@@ -8,6 +10,7 @@ export ResponseType, Dichotomous, Nominal, Ordinal, Continuous, checkresponsetyp
 export Dimensionality, Univariate, Multivariate
 export EstimationType, PointEstimate, SamplingEstimate
 export response_type, item_dimensionality, person_dimensionality, estimation_type
+export fit, predict
 
 """
     ItemResponseModel
@@ -84,7 +87,7 @@ function expected_score end
 function information end
 
 """
-    fit(::Type{<:ItemResponseModel}, data::AbstractMatrix[, alg])
+    fit(::Type{<:ItemResponseModel}, data::AbstractMatrix, args; kwargs...)
 
 Fit an item response model to response data.
 

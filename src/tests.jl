@@ -1,7 +1,10 @@
 module Tests
 
+import AbstractItemResponseModels:
+    response_type, item_dimensionality, person_dimensionality, estimation_type, fit,
+    irf, iif
+
 using AbstractItemResponseModels
-using StatsBase
 using Test
 
 export FakeIRM
@@ -24,35 +27,35 @@ function FakeIRM{RT,PD,ID,ET}(data::AbstractMatrix) where {RT,PD,ID,ET}
     return FakeIRM{RT,PD,ID,ET}(betas)
 end
 
-AbstractItemResponseModels.response_type(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = RT
-AbstractItemResponseModels.item_dimensionality(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = ID
-AbstractItemResponseModels.person_dimensionality(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = PD
-AbstractItemResponseModels.estimation_type(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = ET
+response_type(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = RT
+item_dimensionality(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = ID
+person_dimensionality(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = PD
+estimation_type(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = ET
 
 # methods
-function AbstractItemResponseModels.irf(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
+function irf(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
     checkresponsetype(RT, y)
     return 0.0
 end
 
-function AbstractItemResponseModels.irf(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
+function irf(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
     checkresponsetype(RT, y)
     nsamples = 10
     return fill(0.0, nsamples)
 end
 
-function AbstractItemResponseModels.iif(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
+function iif(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
     checkresponsetype(RT, y)
     return 1.0
 end
 
-function AbstractItemResponseModels.iif(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
+function iif(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
     checkresponsetype(RT, y)
     nsamples = 10
     return fill(1.0, nsamples)
 end
 
-function StatsBase.fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where {RT,PD,ID,ET}
+function fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where {RT,PD,ID,ET}
     return FakeIRM{RT,PD,ID,ET}(data)
 end
 

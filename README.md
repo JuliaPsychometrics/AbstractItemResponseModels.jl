@@ -7,18 +7,18 @@
 
 This package provides a generic interface for item response models in Julia. It is targeted 
 at developers of item response model packages. Packages sucessfully implementing the 
-`AbstractItemResponseModels.jl` interface will profit from features within `JuliaPsychometrics` 
+AbstractItemResponseModels interface will profit from features within [JuliaPsychometrics](https://github.com/JuliaPsychometrics/)
 such as plotting for their item response models (e.g. via [`ItemResponseRecipes.jl`](https://github.com/JuliaPsychometrics/ItemResponseRecipes.jl)).
 
 ## Interface
-Creating a package using `AbstractItemResponseModels.jl` requires that
+Creating a package using AbstractItemResponseModels requires that
 
-1. `AbstractItemResponseModels.jl` is added as a package dependency
-2. the `AbstractItemResponseModels.jl` interface is implemented as described below
+1. AbstractItemResponseModels.jl is added as a package dependency
+2. the AbstractItemResponseModels interface is implemented as described below
 3. [optional] the interface tested (also described below)
 
 ### Types
-`AbstractItemResponseModels.jl` offers a single abstract type defining an item response model. 
+AbstractItemResponseModels offers a single abstract type defining an item response model. 
 
 ```julia
 abstract type ItemResponseModel end
@@ -32,7 +32,7 @@ struct MyFancyIRTModel <: ItemResponseModel end
 
 ### Traits
 Item response models have traits attached to them allowing for flexible dispatch. 
-`AbstractItemResponseModels.jl` defines a total of 4 such traits.
+AbstractItemResponseModels defines a total of 4 such traits.
 
 #### `ResponseType`
 Each item response model must define its response type.
@@ -73,7 +73,7 @@ item_dimensionality(::Type{MyFancyIRTModel}) = Univariate
 
 #### EstimationType
 Defining an estimation type allows dispatching based on the type of parameter estimation in 
-an item response model. `AbstractItemResponseModels.jl` differentiates between point estimation 
+an item response model. AbstractItemResponseModels differentiates between point estimation 
 (e.g. Maximum Likelihood Estimation) and sampling based estimation such as Markov Chain Monte 
 Carlo Methods).
 
@@ -89,7 +89,7 @@ estimation_type(::Type{MyFancyIRTModel}) = PointEstimate
 ```
 
 ### Functions
-Implementing the `AbstractItemResponseModels.jl` interface requires defining methods for the 
+Implementing the AbstractItemResponseModels interface requires defining methods for the 
 generic functions provided in this package.
 
 First a item response function must be provided by extending the `irf` generic function.
@@ -118,7 +118,7 @@ information(model::ItemResponseModel, theta[, is, weights])
 ```
 
 ## Interface Tests
-`AbstractItemResponseModels.jl` provides standardized testing of the interface in a separate 
+AbstractItemResponseModels provides standardized testing of the interface in a separate 
 module `Tests`. 
 
 To test if your implementation of the interface is correct, add the `test_interface` function 
@@ -138,4 +138,5 @@ end
 If you implement multiple models in your package, make sure to call `test_interface` for all
 model types. An example of this can be seen in the [`RaschModels.jl`](https://github.com/JuliaPsychometrics/RaschModels.jl/blob/main/test/test_interface.jl) package.
 
-Only item response theory packages that successfully pass the interface test for all models will be considered for `JuliaPsychometrics`.
+Only item response theory packages that successfully pass the interface test for all models 
+will be considered for [JuliaPsychometrics](https://github.com/JuliaPsychometrics/).

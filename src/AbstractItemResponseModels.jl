@@ -6,11 +6,11 @@ export ItemResponseModel
 
 export irf, iif
 export expected_score, information
-export ResponseType, Dichotomous, Nominal, Ordinal, Continuous, checkresponsetype
-export Dimensionality, Univariate, Multivariate
-export EstimationType, PointEstimate, SamplingEstimate
-export response_type, item_dimensionality, person_dimensionality, estimation_type
 export fit, predict
+
+export ResponseType, Dichotomous, Nominal, Ordinal, Continuous, response_type, checkresponsetype
+export Dimensionality, Univariate, Multivariate, item_dimensionality, person_dimensionality
+export EstimationType, PointEstimate, SamplingEstimate, estimation_type
 
 """
     ItemResponseModel
@@ -84,10 +84,27 @@ If `estimation_type(model) == SamplingEstimate` then `expected_score` must retur
 of values with the length equal to the number of samples drawn.
 """
 function expected_score end
+
+"""
+    information(model::ItemResponseModel, theta) -> Float64
+    information(model::ItemRepsonseModel, theta) -> Vector{Float64}
+    information(model::ItemResponseModel, theta, is) -> Float64
+    information(model::ItemRepsonseModel, theta, is) -> Vector{Float64}
+
+Calculate the information of an [`ItemResponseModel`](@ref) given person parameter(s)
+`theta` and optionally one or multiple item identifiers `is`. If `is` is omitted, the
+information of the whole test (test information) is returned.
+
+If `estimatione_type(model) == PointEstimate` then `information` must return a single
+scalar value.
+
+If `estimation_type(model) == SamplingEstimate` then `information` musst return a vector
+of values with the length equal to the number of samples drawn.
+"""
 function information end
 
 """
-    fit(::Type{<:ItemResponseModel}, data::AbstractMatrix, args; kwargs...)
+    fit(::Type{<:ItemResponseModel}, data::AbstractMatrix, args...; kwargs...)
 
 Fit an item response model to response data.
 
@@ -96,7 +113,7 @@ If `data` is a response matrix, the columns must describe items and rows describ
 function fit end
 
 """
-    predict(model::ItemResponseModel, )
+    predict(model::ItemResponseModel, args...; kwargs...)
 """
 function predict end
 

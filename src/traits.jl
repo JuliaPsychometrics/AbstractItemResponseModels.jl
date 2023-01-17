@@ -8,7 +8,7 @@ abstract type ResponseType end
 """
     response_type(::T) -> ResponseType
 
-Return the [`ResponseType`](@ref) of the [`ItemResponseModel`](@ref).
+Return the [`ResponseType`](@ref) of an [`ItemResponseModel`](@ref).
 """
 response_type(::T) where {T} = response_type(T)
 response_type(T::Type) = throw(MethodError(response_type, (T,)))

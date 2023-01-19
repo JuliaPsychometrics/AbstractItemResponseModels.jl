@@ -73,7 +73,7 @@ jobs:
           Pkg.add("LocalRegistry")
           using LocalRegistry
           register(
-            registry = "https://github-actions[bot]:${{ secrets.GITHUB_TOKEN }}@github.com/JuliaPsychometrics/Registry.git", 
+            registry = "https://github-actions[bot]:${{ secrets.GITHUB_TOKEN }}@github.com/JuliaPsychometrics/Registry", 
             repo = "git@github.com:JuliaPsychometrics/AbstractItemResponseModels.jl.git", 
             ignore_reregistration=true
           )

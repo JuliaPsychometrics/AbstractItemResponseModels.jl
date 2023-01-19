@@ -68,7 +68,7 @@ jobs:
       - run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          julia --project -e '
+          julia -e '
           using Pkg
           Pkg.add("LocalRegistry")
           using LocalRegistry

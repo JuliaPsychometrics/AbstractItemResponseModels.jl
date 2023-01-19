@@ -58,3 +58,16 @@ jobs:
             using AbstractItemResponseModels
             DocMeta.setdocmeta!(AbstractItemResponseModels, :DocTestSetup, :(using AbstractItemResponseModels); recursive=true)
             doctest(AbstractItemResponseModels)'
+  register:
+    name: Package Registration 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+      - run: |
+          julia --project -e '
+          using Pkg
+          Pkg.add("LocalRegistry")
+          using LocalRegistry
+          register("AbstractItemResponseModels", registry = "git@github.com:JuliaPsychometrics/Registry.git")
+          '

@@ -68,7 +68,7 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v2
-      - uses: webfactory/ssh-agent@0.7.0
+      - uses: webfactory/ssh-agent@v0.7.0
         with: 
           ssh-private-key: ${{ secrets.REGISTRATOR_TOKEN }}
       - uses: julia-actions/setup-julia@v1

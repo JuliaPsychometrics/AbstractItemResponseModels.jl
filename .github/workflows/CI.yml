@@ -68,6 +68,7 @@ jobs:
       - run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --unset-all http.https://github.com/.extraheader
           julia -e '
           using Pkg
           Pkg.add("LocalRegistry")

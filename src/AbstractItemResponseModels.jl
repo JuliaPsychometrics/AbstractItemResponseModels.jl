@@ -102,9 +102,9 @@ function expected_score end
 
 """
     information(model::ItemResponseModel, theta; scoring_function) -> Float64
-    information(model::ItemRepsonseModel, theta; scoring_function) -> Vector{Float64}
+    information(model::ItemResponseModel, theta; scoring_function) -> Vector{Float64}
     information(model::ItemResponseModel, theta, is; scoring_function) -> Float64
-    information(model::ItemRepsonseModel, theta, is; scoring_function) -> Vector{Float64}
+    information(model::ItemResponseModel, theta, is; scoring_function) -> Vector{Float64}
 
 Calculate the information of an [`ItemResponseModel`](@ref).
 

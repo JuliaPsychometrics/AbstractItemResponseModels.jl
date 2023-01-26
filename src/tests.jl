@@ -55,6 +55,21 @@ function iif(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where
     return fill(1.0, nsamples)
 end
 
+function expected_score(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, is=nothing; scoring_function=identity) where {RT,PD,ID}
+    return scoring_function(0.0)
+end
+
+function expected_score(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, is=nothing; scoring_function=identity) where {RT,PD,ID}
+    return scoring_function.(fill(0.0, 10))
+end
+
+function information(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, is=nothing; scoring_function=identity) where {RT,PD,ID}
+    return scoring_function(0.0)
+end
+function information(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, is=nothing; scoring_function=identity) where {RT,PD,ID}
+    return scoring_function.(fill(0.0, 10))
+end
+
 function fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where {RT,PD,ID,ET}
     return FakeIRM{RT,PD,ID,ET}(data)
 end
@@ -76,6 +91,8 @@ function test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
         @testset "Interface" begin
             test_irf(model)
             test_iif(model)
+            test_expected_score(model)
+            test_information(model)
         end
     end
 end
@@ -89,11 +106,13 @@ function test_traits(model)
 end
 
 function test_irf(model::ItemResponseModel)
-    rt = response_type(model)
-    pdim = person_dimensionality(model)
-    idim = item_dimensionality(model)
-    et = estimation_type(model)
-    return test_irf(rt, pdim, idim, et, model)
+    @testset "irt" begin
+        rt = response_type(model)
+        pdim = person_dimensionality(model)
+        idim = item_dimensionality(model)
+        et = estimation_type(model)
+        return test_irf(rt, pdim, idim, et, model)
+    end
 end
 
 function test_irf(rt::Type{Dichotomous}, pdim::Type{<:Dimensionality}, idim::Type{<:Dimensionality}, et::Type{<:EstimationType}, model)
@@ -122,11 +141,13 @@ function test_irf(rt::Type{Continuous}, pdim::Type{<:Dimensionality}, idim::Type
 end
 
 function test_iif(model::ItemResponseModel)
-    rt = response_type(model)
-    pdim = person_dimensionality(model)
-    idim = item_dimensionality(model)
-    et = estimation_type(model)
-    return test_iif(rt, pdim, idim, et, model)
+    @testset "iif" begin
+        rt = response_type(model)
+        pdim = person_dimensionality(model)
+        idim = item_dimensionality(model)
+        et = estimation_type(model)
+        return test_iif(rt, pdim, idim, et, model)
+    end
 end
 
 function test_iif(rt::Type{Dichotomous}, pdim::Type{<:Dimensionality}, idim::Type{<:Dimensionality}, et::Type{<:EstimationType}, model)
@@ -152,6 +173,42 @@ function test_iif(rt::Type{Continuous}, pdim::Type{<:Dimensionality}, idim::Type
     @test iif(model, theta, 1, 3.5) isa out_type(et)
     @test_throws Exception iif(model, theta, 1, 1im)
     @test_throws Exception iif(model, theta, 1, (0, 1))
+end
+
+function test_expected_score(model::ItemResponseModel)
+    @testset "expected_score" begin
+        rt = response_type(model)
+        pdim = person_dimensionality(model)
+        idim = item_dimensionality(model)
+        et = estimation_type(model)
+        return test_expected_score(rt, pdim, idim, et, model)
+    end
+end
+
+function test_expected_score(rt::Type{<:ResponseType}, pdim::Type{<:Dimensionality}, idim::Type{<:Dimensionality}, et::Type{<:EstimationType}, model)
+    theta = sim_theta(pdim)
+    @test expected_score(model, theta) isa out_type(et)
+    @test expected_score(model, theta, 1) isa out_type(et)
+    @test expected_score(model, theta; scoring_function=identity) == expected_score(model, theta)
+    @test expected_score(model, theta, 1; scoring_function=identity) == expected_score(model, theta, 1)
+end
+
+function test_information(model::ItemResponseModel)
+    @testset "information" begin
+        rt = response_type(model)
+        pdim = person_dimensionality(model)
+        idim = item_dimensionality(model)
+        et = estimation_type(model)
+        return test_information(rt, pdim, idim, et, model)
+    end
+end
+
+function test_information(rt::Type{<:ResponseType}, pdim::Type{<:Dimensionality}, idim::Type{<:Dimensionality}, et::Type{<:EstimationType}, model)
+    theta = sim_theta(pdim)
+    @test information(model, theta) isa out_type(et)
+    @test information(model, theta, 1) isa out_type(et)
+    @test information(model, theta; scoring_function=identity) == information(model, theta)
+    @test information(model, theta, 1; scoring_function=identity) == information(model, theta, 1)
 end
 
 sim_theta(::Type{Univariate}) = 0.0

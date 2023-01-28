@@ -37,11 +37,15 @@ abstract type ItemResponseModel end
     irf(model::ItemResponseModel, theta, i, y) -> Float64
     irf(model::ItemResponseModel, theta, i, y) -> Vector{Float64}
 
-Evaluate the item response function of an [`ItemResponseModel`](@ref) given person parameter(s)
-`theta` for response `y`.
+Evaluate the item response function of an [`ItemResponseModel`](@ref).
 
-The item is specified by an unique item identitfier `i`.
+## Argument
+- `model`: An [`ItemResponseModel`](@ref)
+- `theta`: The person parameter value(s)
+- `i`: A unique item identifier
+- `y`: Response value(s)
 
+## Return values
 If `estimation_type(model) == PointEstimate` then the item response function must return
 a scalar value.
 
@@ -54,11 +58,13 @@ function irf end
     iif(model::ItemResponseModel, theta, i, y) -> Float64
     iif(model::ItemResponseModel, theta, i, y) -> Vector{Float64}
 
-Evaluate the item information function of an [`ItemResponseModel`](@ref) given person parameters(s)
-`theta` for response `y`.
+## Argument
+- `model`: An [`ItemResponseModel`](@ref)
+- `theta`: The person parameter value(s)
+- `i`: A unique item identifier
+- `y`: Response value(s)
 
-The item is specified by an unique item identifier `i`.
-
+## Return values
 If `estimation_type(model) == PointEstimate` then the item information function must return
 a scalar value.
 
@@ -68,15 +74,24 @@ return a vector of values with the length equal to the number of samples drawn.
 function iif end
 
 """
-    expected_score(model::ItemResponseModel, theta) -> Float64
-    expected_score(model::ItemResponseModel, theta) -> Vector{Float64}
-    expected_score(model::ItemResponseModel, theta, is) -> Float64
-    expected_score(model::ItemResponseModel, theta, is) -> Vector{Float64}
+    expected_score(model::ItemResponseModel, theta; scoring_function) -> Float64
+    expected_score(model::ItemResponseModel, theta; scoring_function) -> Vector{Float64}
+    expected_score(model::ItemResponseModel, theta, is; scoring_function) -> Float64
+    expected_score(model::ItemResponseModel, theta, is; scoring_function) -> Vector{Float64}
 
-Calculate the expected score of an [`ItemResponseModel`](@ref) given person parameter(s)
-`theta` and optionally one or multiple item identifiers `is`.  If `is` is omitted, the
-expected score of the whole test is returned.
+Calculate the expected score of an [`ItemResponseModel`](@ref).
 
+## Arguments
+- `model`: An [`ItemResponseModel`](@ref)
+- `theta`: The person parameter value(s)
+- `is`: One or multiple item identifiers. If `is` is omitted, the expected score for the
+  whole test is returned.
+
+## Keyword arguments
+- `scoring_function`: A function mapping all possible response values `y` to arbitrary values.
+  Must default to `identity`.
+
+## Return values
 If `estimation_type(model) == PointEstimate` then `expected_score` must return a single
 scalar value.
 
@@ -86,15 +101,23 @@ of values with the length equal to the number of samples drawn.
 function expected_score end
 
 """
-    information(model::ItemResponseModel, theta) -> Float64
-    information(model::ItemRepsonseModel, theta) -> Vector{Float64}
-    information(model::ItemResponseModel, theta, is) -> Float64
-    information(model::ItemRepsonseModel, theta, is) -> Vector{Float64}
+    information(model::ItemResponseModel, theta; scoring_function) -> Float64
+    information(model::ItemResponseModel, theta; scoring_function) -> Vector{Float64}
+    information(model::ItemResponseModel, theta, is; scoring_function) -> Float64
+    information(model::ItemResponseModel, theta, is; scoring_function) -> Vector{Float64}
 
-Calculate the information of an [`ItemResponseModel`](@ref) given person parameter(s)
-`theta` and optionally one or multiple item identifiers `is`. If `is` is omitted, the
-information of the whole test (test information) is returned.
+Calculate the information of an [`ItemResponseModel`](@ref).
 
+## Arguments
+- `theta`: The person parameter value(s)
+- `is`: One or multiple item identifiers. If `is` is omitted, the information of the whole
+  test (test information) is returned.
+
+## Keyword arguments
+- `scoring_function`: A function mapping all possible response values `y` to arbitrary values.
+  Must default to `identity`.
+
+## Return values
 If `estimatione_type(model) == PointEstimate` then `information` must return a single
 scalar value.
 
@@ -104,11 +127,20 @@ of values with the length equal to the number of samples drawn.
 function information end
 
 """
-    fit(::Type{<:ItemResponseModel}, data::AbstractMatrix, args...; kwargs...)
+    fit(::Type{T}, data::AbstractMatrix, args...; kwargs...) where {T<:ItemResponseModel} -> T
 
 Fit an item response model to response data.
 
-If `data` is a response matrix, the columns must describe items and rows describe persons.
+## Arguments
+- `data`: Observed data. If `data` is a response matrix, the columns must describe items and
+  rows describe persons.
+- `args...`: Additional arguments required to fit the [`ItemResponseModel`](@ref)
+
+## Keyword arguments
+- `kwargs...`: Additional keyword arguments required to fit the [`ItemResponseModel`](@ref)
+
+## Return values
+A fitted [`ItemResponseModel`](@ref).
 """
 function fit end
 

@@ -2,7 +2,7 @@ module Tests
 
 import AbstractItemResponseModels:
     response_type, item_dimensionality, person_dimensionality, estimation_type, fit,
-    irf, iif
+    irf, iif, expected_score, information
 
 using AbstractItemResponseModels
 using Test
@@ -66,6 +66,7 @@ end
 function information(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, is=nothing; scoring_function=identity) where {RT,PD,ID}
     return scoring_function(0.0)
 end
+
 function information(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, is=nothing; scoring_function=identity) where {RT,PD,ID}
     return scoring_function.(fill(0.0, 10))
 end
@@ -114,7 +115,7 @@ function test_traits(model)
 end
 
 function test_irf(model::ItemResponseModel)
-    @testset "irt" begin
+    @testset "irf" begin
         rt = response_type(model)
         pdim = person_dimensionality(model)
         idim = item_dimensionality(model)

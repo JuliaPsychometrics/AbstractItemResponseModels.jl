@@ -1,6 +1,6 @@
 name = "AbstractItemResponseModels"
 uuid = "0ab3451c-659c-47cd-a7a9-a2d579e209dd"
-authors = ["Philipp Gewessler"]
+authors = ["Philipp Gewessler", "Tobias Alfers"]
 version = "0.1.0"
 
 [deps]

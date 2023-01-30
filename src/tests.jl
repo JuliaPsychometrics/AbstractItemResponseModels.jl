@@ -75,9 +75,17 @@ function fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where {RT,PD,ID
 end
 
 """
-    test_interface(T::Type{<:ItemResponseModel}, data; kwargs...)
+    test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
 
-A convenience function to test a custom implementation `T <: ItemResponseModel`.
+Test the implementation of an item response model interface.
+
+## Arguments
+- `T`: The implemented model type
+- `data`: observed data
+- `args...`: Additional arguments passed to `fit`
+
+## Keyword arguments
+- `kwargs...`: Additional keyword arguments passed to `fit`
 """
 function test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
     @testset "AbstractItemResponseModels.jl API Tests" begin

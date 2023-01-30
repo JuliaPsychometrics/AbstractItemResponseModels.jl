@@ -8,7 +8,7 @@
 This package provides a generic interface for item response models in Julia. It is targeted 
 at developers of item response model packages. Packages sucessfully implementing the 
 AbstractItemResponseModels interface will profit from features within [JuliaPsychometrics](https://github.com/JuliaPsychometrics/)
-such as plotting for their item response models (e.g. via [`ItemResponseRecipes.jl`](https://github.com/JuliaPsychometrics/ItemResponseRecipes.jl)).
+such as plotting for their item response models (e.g. via [ItemResponsePlots.jl](https://github.com/JuliaPsychometrics/ItemResponsePlots.jl)).
 
 ## Interface
 Creating a package using AbstractItemResponseModels requires that
@@ -34,7 +34,7 @@ struct MyFancyIRTModel <: ItemResponseModel end
 Item response models have traits attached to them allowing for flexible dispatch. 
 AbstractItemResponseModels defines a total of 4 such traits.
 
-#### `ResponseType`
+#### Response type
 Each item response model must define its response type.
 The response type sets the plausible values that the response data can take.
 
@@ -71,7 +71,7 @@ person_dimensionality(::Type{MyFancyIRTModel}) = Multivariate
 item_dimensionality(::Type{MyFancyIRTModel}) = Univariate
 ```
 
-#### EstimationType
+#### Estimation type
 Defining an estimation type allows dispatching based on the type of parameter estimation in 
 an item response model. AbstractItemResponseModels differentiates between point estimation 
 (e.g. Maximum Likelihood Estimation) and sampling based estimation such as Markov Chain Monte 
@@ -113,8 +113,8 @@ fit(::Type{<:ItemResponseModel}, data, args...; kwargs...)
 If applicable, an expected score function and an information function must be provided.
 
 ```julia
-expected_score(model::ItemResponseModel, theta[, is, weights])
-information(model::ItemResponseModel, theta[, is, weights])
+expected_score(model::ItemResponseModel, theta[, is]; scoring_function)
+information(model::ItemResponseModel, theta[, is]; scoring_function)
 ```
 
 ## Interface Tests
@@ -136,7 +136,4 @@ end
 ```
 
 If you implement multiple models in your package, make sure to call `test_interface` for all
-model types. An example of this can be seen in the [`RaschModels.jl`](https://github.com/JuliaPsychometrics/RaschModels.jl/blob/main/test/test_interface.jl) package.
-
-Only item response theory packages that successfully pass the interface test for all models 
-will be considered for [JuliaPsychometrics](https://github.com/JuliaPsychometrics/).
+model types. An example of this can be seen in the [RaschModels.jl](https://github.com/JuliaPsychometrics/RaschModels.jl/blob/main/test/test_interface.jl) package.

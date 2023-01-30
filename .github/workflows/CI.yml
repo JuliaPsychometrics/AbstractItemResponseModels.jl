@@ -58,27 +58,3 @@ jobs:
             using AbstractItemResponseModels
             DocMeta.setdocmeta!(AbstractItemResponseModels, :DocTestSetup, :(using AbstractItemResponseModels); recursive=true)
             doctest(AbstractItemResponseModels)'
-  register:
-    if: github.ref == 'refs/heads/main'
-    name: Package Registration 
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-      - uses: webfactory/ssh-agent@v0.7.0
-        with: 
-          ssh-private-key: ${{ secrets.REGISTRATOR_TOKEN }}
-      - uses: julia-actions/setup-julia@v1
-      - run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          julia -e '
-          using Pkg
-          Pkg.add("LocalRegistry")
-          using LocalRegistry
-          register(
-            registry = "git@github.com:JuliaPsychometrics/Registry.git", 
-            repo = "git@github.com:JuliaPsychometrics/AbstractItemResponseModels.jl.git", 
-            ignore_reregistration=true
-          )
-          '

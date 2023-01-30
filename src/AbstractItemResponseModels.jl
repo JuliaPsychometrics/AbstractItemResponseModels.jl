@@ -29,7 +29,6 @@ Additionally `T <: ItemResponseModel` must implement the following interface:
 - [`iif`](@ref): An item information function returning the information of answering with
   a particular response on an item given an ability estimate.
 - [`fit`](@ref): A function fitting an item response model of type `T` to observed data.
-- [`predict`](@ref): A function predicting future responses
 """
 abstract type ItemResponseModel end
 
@@ -143,11 +142,6 @@ Fit an item response model to response data.
 A fitted [`ItemResponseModel`](@ref).
 """
 function fit end
-
-"""
-    predict(model::ItemResponseModel, args...; kwargs...)
-"""
-function predict end
 
 include("traits.jl")
 include("tests.jl")

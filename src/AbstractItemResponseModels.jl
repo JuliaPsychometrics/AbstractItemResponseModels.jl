@@ -7,6 +7,7 @@ export ItemResponseModel
 export irf, iif
 export expected_score, information
 export fit, predict
+export getitemlocations, getpersonlocations
 
 export ResponseType,
     Dichotomous, Nominal, Ordinal, Continuous, response_type, checkresponsetype

@@ -29,6 +29,8 @@ Additionally `T <: ItemResponseModel` must implement the following interface:
 - [`iif`](@ref): An item information function returning the information of answering with
   a particular response on an item given an ability estimate.
 - [`fit`](@ref): A function fitting an item response model of type `T` to observed data.
+- [`getitemlocations`](@ref): A function returning the item locations for a given item.
+- [`getpersonlocations`](@ref): A function returning the person locations for a given person.
 """
 abstract type ItemResponseModel end
 
@@ -142,6 +144,33 @@ Fit an item response model to response data.
 A fitted [`ItemResponseModel`](@ref).
 """
 function fit end
+
+
+"""
+    getitemlocations(model::ItemResponseModel, i) -> Float64
+    getitemlocations(model::ItemResponseModel, i) -> Vector{Float64}
+    getitemlocations(model::ItemResponseModel, i) -> Vector{Vector{Float64}}
+
+Get the item locations for an item from an [`ItemResponseModel`](@ref).
+
+## Arguments
+- `model`: An [`ItemResponseModel`](@ref)
+- `i`: A unique item identifier
+"""
+function getitemlocations end
+
+"""
+    getpersonlocations(model::ItemResponseModel, i) -> Float64
+    getpersonlocations(model::ItemResponseModel, i) -> Vector{Float64}
+    getpersonlocations(model::ItemResponseModel, i) -> Vector{Vector{Float64}}
+
+Get the person locations for an person from an [`ItemResponseModel`](@ref).
+
+## Arguments
+- `model`: An [`ItemResponseModel`](@ref)
+- `i`: A unique person identifier
+"""
+function getpersonlocations end
 
 include("traits.jl")
 include("tests.jl")

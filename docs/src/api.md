@@ -41,6 +41,8 @@ checkresponsetype
 ```@docs
 expected_score
 fit
+getitemlocations
+getpersonlocations
 iif
 information
 irf

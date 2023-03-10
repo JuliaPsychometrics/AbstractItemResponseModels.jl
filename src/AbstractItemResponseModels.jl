@@ -8,7 +8,8 @@ export irf, iif
 export expected_score, information
 export fit, predict
 
-export ResponseType, Dichotomous, Nominal, Ordinal, Continuous, response_type, checkresponsetype
+export ResponseType,
+    Dichotomous, Nominal, Ordinal, Continuous, response_type, checkresponsetype
 export Dimensionality, Univariate, Multivariate, item_dimensionality, person_dimensionality
 export EstimationType, PointEstimate, SamplingEstimate, estimation_type
 
@@ -35,8 +36,8 @@ Additionally `T <: ItemResponseModel` must implement the following interface:
 abstract type ItemResponseModel end
 
 """
-    irf(model::ItemResponseModel, theta, i, y) -> Float64
-    irf(model::ItemResponseModel, theta, i, y) -> Vector{Float64}
+    irf(model::ItemResponseModel, theta, i, y)::Real
+    irf(model::ItemResponseModel, theta, i, y)::AbstractVector{<:Real}
 
 Evaluate the item response function of an [`ItemResponseModel`](@ref).
 
@@ -56,8 +57,8 @@ a vector of values with the length equal to the number of samples.
 function irf end
 
 """
-    iif(model::ItemResponseModel, theta, i, y) -> Float64
-    iif(model::ItemResponseModel, theta, i, y) -> Vector{Float64}
+    iif(model::ItemResponseModel, theta, i, y)::Real
+    iif(model::ItemResponseModel, theta, i, y)::AbstractVector{<:Real}
 
 ## Argument
 - `model`: An [`ItemResponseModel`](@ref)
@@ -75,10 +76,10 @@ return a vector of values with the length equal to the number of samples drawn.
 function iif end
 
 """
-    expected_score(model::ItemResponseModel, theta; scoring_function) -> Float64
-    expected_score(model::ItemResponseModel, theta; scoring_function) -> Vector{Float64}
-    expected_score(model::ItemResponseModel, theta, is; scoring_function) -> Float64
-    expected_score(model::ItemResponseModel, theta, is; scoring_function) -> Vector{Float64}
+    expected_score(model::ItemResponseModel, theta; scoring_function)::Real
+    expected_score(model::ItemResponseModel, theta; scoring_function)::AbstractVector{<:Real}
+    expected_score(model::ItemResponseModel, theta, is; scoring_function)::Real
+    expected_score(model::ItemResponseModel, theta, is; scoring_function)::AbstractVector{<:Real}
 
 Calculate the expected score of an [`ItemResponseModel`](@ref).
 
@@ -102,10 +103,10 @@ of values with the length equal to the number of samples drawn.
 function expected_score end
 
 """
-    information(model::ItemResponseModel, theta; scoring_function) -> Float64
-    information(model::ItemResponseModel, theta; scoring_function) -> Vector{Float64}
-    information(model::ItemResponseModel, theta, is; scoring_function) -> Float64
-    information(model::ItemResponseModel, theta, is; scoring_function) -> Vector{Float64}
+    information(model::ItemResponseModel, theta; scoring_function)::Real
+    information(model::ItemResponseModel, theta; scoring_function)::AbstractVector{<:Real}
+    information(model::ItemResponseModel, theta, is; scoring_function)::Real
+    information(model::ItemResponseModel, theta, is; scoring_function)::AbstractVector{<:Real}
 
 Calculate the information of an [`ItemResponseModel`](@ref).
 
@@ -128,7 +129,7 @@ of values with the length equal to the number of samples drawn.
 function information end
 
 """
-    fit(::Type{T}, data::AbstractMatrix, args...; kwargs...) where {T<:ItemResponseModel} -> T
+    fit(::Type{T}, data::AbstractMatrix, args...; kwargs...)::T where {T<:ItemResponseModel}
 
 Fit an item response model to response data.
 
@@ -147,9 +148,9 @@ function fit end
 
 
 """
-    getitemlocations(model::ItemResponseModel, i) -> Float64
-    getitemlocations(model::ItemResponseModel, i) -> Vector{Float64}
-    getitemlocations(model::ItemResponseModel, i) -> Vector{Vector{Float64}}
+    getitemlocations(model::ItemResponseModel, i)::Real
+    getitemlocations(model::ItemResponseModel, i)::AbstractVector{<:Real}
+    getitemlocations(model::ItemResponseModel, i)::AbstractVector{AbstractVector{<:Real}}
 
 Get the item locations for an item from an [`ItemResponseModel`](@ref).
 
@@ -160,9 +161,9 @@ Get the item locations for an item from an [`ItemResponseModel`](@ref).
 function getitemlocations end
 
 """
-    getpersonlocations(model::ItemResponseModel, i) -> Float64
-    getpersonlocations(model::ItemResponseModel, i) -> Vector{Float64}
-    getpersonlocations(model::ItemResponseModel, i) -> Vector{Vector{Float64}}
+    getpersonlocations(model::ItemResponseModel, i)::Real
+    getpersonlocations(model::ItemResponseModel, i)::AbstractVector{<:Real}
+    getpersonlocations(model::ItemResponseModel, i)::AbstractVector{AbstractVector{<:Real}}
 
 Get the person locations for an person from an [`ItemResponseModel`](@ref).
 

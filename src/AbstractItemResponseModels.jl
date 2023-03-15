@@ -7,8 +7,10 @@ export ItemResponseModel
 export irf, iif
 export expected_score, information
 export fit, predict
+export getitemlocations, getpersonlocations
 
-export ResponseType, Dichotomous, Nominal, Ordinal, Continuous, response_type, checkresponsetype
+export ResponseType,
+    Dichotomous, Nominal, Ordinal, Continuous, response_type, checkresponsetype
 export Dimensionality, Univariate, Multivariate, item_dimensionality, person_dimensionality
 export EstimationType, PointEstimate, SamplingEstimate, estimation_type
 
@@ -29,12 +31,14 @@ Additionally `T <: ItemResponseModel` must implement the following interface:
 - [`iif`](@ref): An item information function returning the information of answering with
   a particular response on an item given an ability estimate.
 - [`fit`](@ref): A function fitting an item response model of type `T` to observed data.
+- [`getitemlocations`](@ref): A function returning the item locations for a given item.
+- [`getpersonlocations`](@ref): A function returning the person locations for a given person.
 """
 abstract type ItemResponseModel end
 
 """
-    irf(model::ItemResponseModel, theta, i, y) -> Float64
-    irf(model::ItemResponseModel, theta, i, y) -> Vector{Float64}
+    irf(model::ItemResponseModel, theta, i, y)::Real
+    irf(model::ItemResponseModel, theta, i, y)::AbstractVector{<:Real}
 
 Evaluate the item response function of an [`ItemResponseModel`](@ref).
 
@@ -54,8 +58,8 @@ a vector of values with the length equal to the number of samples.
 function irf end
 
 """
-    iif(model::ItemResponseModel, theta, i, y) -> Float64
-    iif(model::ItemResponseModel, theta, i, y) -> Vector{Float64}
+    iif(model::ItemResponseModel, theta, i, y)::Real
+    iif(model::ItemResponseModel, theta, i, y)::AbstractVector{<:Real}
 
 ## Argument
 - `model`: An [`ItemResponseModel`](@ref)
@@ -73,10 +77,10 @@ return a vector of values with the length equal to the number of samples drawn.
 function iif end
 
 """
-    expected_score(model::ItemResponseModel, theta; scoring_function) -> Float64
-    expected_score(model::ItemResponseModel, theta; scoring_function) -> Vector{Float64}
-    expected_score(model::ItemResponseModel, theta, is; scoring_function) -> Float64
-    expected_score(model::ItemResponseModel, theta, is; scoring_function) -> Vector{Float64}
+    expected_score(model::ItemResponseModel, theta; scoring_function)::Real
+    expected_score(model::ItemResponseModel, theta; scoring_function)::AbstractVector{<:Real}
+    expected_score(model::ItemResponseModel, theta, is; scoring_function)::Real
+    expected_score(model::ItemResponseModel, theta, is; scoring_function)::AbstractVector{<:Real}
 
 Calculate the expected score of an [`ItemResponseModel`](@ref).
 
@@ -100,10 +104,10 @@ of values with the length equal to the number of samples drawn.
 function expected_score end
 
 """
-    information(model::ItemResponseModel, theta; scoring_function) -> Float64
-    information(model::ItemResponseModel, theta; scoring_function) -> Vector{Float64}
-    information(model::ItemResponseModel, theta, is; scoring_function) -> Float64
-    information(model::ItemResponseModel, theta, is; scoring_function) -> Vector{Float64}
+    information(model::ItemResponseModel, theta; scoring_function)::Real
+    information(model::ItemResponseModel, theta; scoring_function)::AbstractVector{<:Real}
+    information(model::ItemResponseModel, theta, is; scoring_function)::Real
+    information(model::ItemResponseModel, theta, is; scoring_function)::AbstractVector{<:Real}
 
 Calculate the information of an [`ItemResponseModel`](@ref).
 
@@ -120,13 +124,13 @@ Calculate the information of an [`ItemResponseModel`](@ref).
 If `estimatione_type(model) == PointEstimate` then `information` must return a single
 scalar value.
 
-If `estimation_type(model) == SamplingEstimate` then `information` musst return a vector
+If `estimation_type(model) == SamplingEstimate` then `information` must return a vector
 of values with the length equal to the number of samples drawn.
 """
 function information end
 
 """
-    fit(::Type{T}, data::AbstractMatrix, args...; kwargs...) where {T<:ItemResponseModel} -> T
+    fit(::Type{T}, data::AbstractMatrix, args...; kwargs...)::T where {T<:ItemResponseModel}
 
 Fit an item response model to response data.
 
@@ -142,6 +146,66 @@ Fit an item response model to response data.
 A fitted [`ItemResponseModel`](@ref).
 """
 function fit end
+
+
+"""
+    getitemlocations(model::ItemResponseModel, i, y)::Real
+    getitemlocations(model::ItemResponseModel, i, y)::AbstractVector{<:Real}
+    getitemlocations(model::ItemResponseModel, i, y)::AbstractMatrix{<:Real}
+
+Get the item locations for an item from an [`ItemResponseModel`](@ref).
+
+## Arguments
+- `model`: An [`ItemResponseModel`](@ref)
+- `i`: A unique item identifier
+- `y`: Response value(s)
+
+## Return values
+If `item_dimensionality(model) == Univariate` and `estimation_type(model) == PointEstimate`
+then `getitemlocations` must return a single scalar value.
+
+If `item_dimensionality(model) == Multivariate` and `estimation_type(model) == PointEstimate`
+then `getitemlocations` must return a vector of values corresponding to the dimensionality
+of the item parameters.
+
+If `item_dimensionality(model) == Univariate` and `estimation_type(model) == SamplingEstimate`
+then `getitemlocations` must return a vector of values with the length equal to the number
+of samples drawn.
+
+If `item_dimensionality(model) == Multivariate` and `estimation_type(model) == SamplingEstimate`
+then `getitemlocations` must return a matrix with rows corresponding to the drawn samples
+and columns corresponding to the dimension of the item parameter.
+"""
+function getitemlocations end
+
+"""
+    getpersonlocations(model::ItemResponseModel, p)::Real
+    getpersonlocations(model::ItemResponseModel, p)::AbstractVector{<:Real}
+    getpersonlocations(model::ItemResponseModel, p)::AbstractMatrix{<:Real}
+
+Get the person locations for an person from an [`ItemResponseModel`](@ref).
+
+## Arguments
+- `model`: An [`ItemResponseModel`](@ref)
+- `p`: A unique person identifier
+
+## Return values
+If `person_dimensionality(model) == Univariate` and `estimation_type(model) == PointEstimate`
+then `getpersonlocations` must return a single scalar value.
+
+If `person_dimensionality(model) == Multivariate` and `estimation_type(model) == PointEstimate`
+then `getpersonlocations` must return a vector of values corresponding to the dimensionality
+of the person parameters.
+
+If `person_dimensionality(model) == Univariate` and `estimation_type(model) == SamplingEstimate`
+then `getpersonlocations` must return a vector of values with the length equal to the number
+of samples drawn.
+
+If `person_dimensionality(model) == Multivariate` and `estimateion_type(model) == SamplingEstimate`
+then `getpersonlocations` must return a matrix with rows corresponding to the drawn samples
+and columns corresponding to the dimension of the person parameter.
+"""
+function getpersonlocations end
 
 include("traits.jl")
 include("tests.jl")

@@ -162,15 +162,15 @@ Get the item locations for an item from an [`ItemResponseModel`](@ref).
 function getitemlocations end
 
 """
-    getpersonlocations(model::ItemResponseModel, i)::Real
-    getpersonlocations(model::ItemResponseModel, i)::AbstractVector{<:Real}
-    getpersonlocations(model::ItemResponseModel, i)::AbstractVector{AbstractVector{<:Real}}
+    getpersonlocations(model::ItemResponseModel, p)::Real
+    getpersonlocations(model::ItemResponseModel, p)::AbstractVector{<:Real}
+    getpersonlocations(model::ItemResponseModel, p)::AbstractVector{AbstractVector{<:Real}}
 
 Get the person locations for an person from an [`ItemResponseModel`](@ref).
 
 ## Arguments
 - `model`: An [`ItemResponseModel`](@ref)
-- `i`: A unique person identifier
+- `p`: A unique person identifier
 """
 function getpersonlocations end
 

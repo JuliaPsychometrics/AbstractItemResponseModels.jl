@@ -105,52 +105,61 @@ function fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where {RT,PD,ID
     return FakeIRM{RT,PD,ID,ET}(data)
 end
 
-function getitemlocations(model::FakeIRM{RT,PD,ID,PointEstimate}, i) where {RT,ID,PD}
+function getitemlocations(
+    model::FakeIRM{RT,PD,Univariate,PointEstimate},
+    i,
+    y,
+) where {RT,PD}
     return 0.0
 end
 
 function getitemlocations(
-    model::FakeIRM{RT,PD,ID,PointEstimate},
+    model::FakeIRM{RT,PD,Multivariate,PointEstimate},
     i,
-) where {RT<:Union{Nominal,Ordinal},ID,PD}
+    y,
+) where {RT,PD}
     return zeros(2)
 end
 
-function getitemlocations(model::FakeIRM{RT,PD,ID,SamplingEstimate}, i) where {RT,ID,PD}
-    nsamples = 10
-    return zeros(nsamples)
+function getitemlocations(
+    model::FakeIRM{RT,PD,Univariate,SamplingEstimate},
+    i,
+    y,
+) where {RT,PD}
+    return zeros(10)
 end
 
 function getitemlocations(
-    model::FakeIRM{RT,PD,ID,SamplingEstimate},
+    model::FakeIRM{RT,PD,Multivariate,SamplingEstimate},
     i,
-) where {RT<:Union{Nominal,Ordinal},ID,PD}
-    nsamples = 10
-    return [zeros(nsamples) for _ in 1:2]
+    y,
+) where {RT,PD}
+    return zeros(10, 2)
 end
 
-function getpersonlocations(model::FakeIRM{RT,PD,ID,PointEstimate}, i) where {RT,ID,PD}
+function getpersonlocations(model::FakeIRM{RT,Univariate,ID,PointEstimate}, i) where {RT,ID}
     return 0.0
 end
 
 function getpersonlocations(
-    model::FakeIRM{RT,PD,ID,PointEstimate},
+    model::FakeIRM{RT,Multivariate,ID,PointEstimate},
     i,
-) where {RT<:Union{Nominal,Ordinal},ID,PD}
+) where {RT,ID}
     return zeros(2)
 end
 
-function getpersonlocations(model::FakeIRM{RT,PD,ID,SamplingEstimate}, i) where {RT,ID,PD}
-    nsamples = 10
-    return zeros(nsamples)
+function getpersonlocations(
+    model::FakeIRM{RT,Univariate,ID,SamplingEstimate},
+    i,
+) where {RT,ID}
+    return zeros(10)
 end
 
 function getpersonlocations(
-    model::FakeIRM{RT,PD,ID,SamplingEstimate},
+    model::FakeIRM{RT,Multivariate,ID,SamplingEstimate},
     i,
-) where {RT<:Union{Nominal,Ordinal},ID,PD}
-    nsamples = 10
-    return [zeros(nsamples) for _ in 1:2]
+) where {RT,ID}
+    return zeros(10, 2)
 end
 
 """
@@ -353,11 +362,16 @@ end
 
 function test_getters(model)
     et = estimation_type(model)
-    rt = response_type(model)
+    pdim = person_dimensionality(model)
+    idim = item_dimensionality(model)
 
     @testset "getters" begin
-        @test getitemlocations(model, 1) isa out_type(et, rt)
-        @test getpersonlocations(model, 1) isa out_type(et, rt)
+        @testset "getitemlocations" begin
+            @test getitemlocations(model, 1, 1) isa out_type(et, idim)
+        end
+        @testset "getpersonlocations" begin
+            @test getpersonlocations(model, 1) isa out_type(et, pdim)
+        end
     end
 end
 
@@ -365,12 +379,11 @@ sim_theta(::Type{Univariate}) = 0.0
 sim_theta(::Type{Multivariate}) = [0.0, 0.0]
 
 out_type(::Type{PointEstimate}) = Real
-out_type(::Type{SamplingEstimate}) = Vector{<:Real}
-out_type(::Type{PointEstimate}, ::Type{<:ResponseType}) = Real
-out_type(::Type{PointEstimate}, ::Type{<:Union{Nominal,Ordinal}}) = Vector{<:Real}
-out_type(::Type{SamplingEstimate}, ::Type{<:ResponseType}) = Vector{<:Real}
-function out_type(::Type{SamplingEstimate}, ::Type{<:Union{Nominal,Ordinal}})
-    return Vector{Vector{T}} where {T<:Real}
-end
+out_type(::Type{SamplingEstimate}) = AbstractVector{<:Real}
+
+out_type(::Type{PointEstimate}, ::Type{Univariate}) = Real
+out_type(::Type{PointEstimate}, ::Type{Multivariate}) = AbstractVector{<:Real}
+out_type(::Type{SamplingEstimate}, ::Type{Univariate}) = AbstractVector{<:Real}
+out_type(::Type{SamplingEstimate}, ::Type{Multivariate}) = AbstractMatrix{<:Real}
 
 end

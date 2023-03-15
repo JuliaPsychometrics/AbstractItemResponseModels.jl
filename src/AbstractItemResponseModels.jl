@@ -124,7 +124,7 @@ Calculate the information of an [`ItemResponseModel`](@ref).
 If `estimatione_type(model) == PointEstimate` then `information` must return a single
 scalar value.
 
-If `estimation_type(model) == SamplingEstimate` then `information` musst return a vector
+If `estimation_type(model) == SamplingEstimate` then `information` must return a vector
 of values with the length equal to the number of samples drawn.
 """
 function information end
@@ -149,28 +149,61 @@ function fit end
 
 
 """
-    getitemlocations(model::ItemResponseModel, i)::Real
-    getitemlocations(model::ItemResponseModel, i)::AbstractVector{<:Real}
-    getitemlocations(model::ItemResponseModel, i)::AbstractVector{AbstractVector{<:Real}}
+    getitemlocations(model::ItemResponseModel, i, y)::Real
+    getitemlocations(model::ItemResponseModel, i, y)::AbstractVector{<:Real}
+    getitemlocations(model::ItemResponseModel, i, y)::AbstractMatrix{<:Real}
 
 Get the item locations for an item from an [`ItemResponseModel`](@ref).
 
 ## Arguments
 - `model`: An [`ItemResponseModel`](@ref)
 - `i`: A unique item identifier
+- `y`: Response value(s)
+
+## Return values
+If `item_dimensionality(model) == Univariate` and `estimation_type(model) == PointEstimate`
+then `getitemlocations` must return a single scalar value.
+
+If `item_dimensionality(model) == Multivariate` and `estimation_type(model) == PointEstimate`
+then `getitemlocations` must return a vector of values corresponding to the dimensionality
+of the item parameters.
+
+If `item_dimensionality(model) == Univariate` and `estimation_type(model) == SamplingEstimate`
+then `getitemlocations` must return a vector of values with the length equal to the number
+of samples drawn.
+
+If `item_dimensionality(model) == Multivariate` and `estimation_type(model) == SamplingEstimate`
+then `getitemlocations` must return a matrix with rows corresponding to the drawn samples
+and columns corresponding to the dimension of the item parameter.
 """
 function getitemlocations end
 
 """
     getpersonlocations(model::ItemResponseModel, p)::Real
     getpersonlocations(model::ItemResponseModel, p)::AbstractVector{<:Real}
-    getpersonlocations(model::ItemResponseModel, p)::AbstractVector{AbstractVector{<:Real}}
+    getpersonlocations(model::ItemResponseModel, p)::AbstractMatrix{<:Real}
 
 Get the person locations for an person from an [`ItemResponseModel`](@ref).
 
 ## Arguments
 - `model`: An [`ItemResponseModel`](@ref)
 - `p`: A unique person identifier
+
+## Return values
+If `person_dimensionality(model) == Univariate` and `estimation_type(model) == PointEstimate`
+then `getpersonlocations` must return a single scalar value.
+
+If `person_dimensionality(model) == Multivariate` and `estimation_type(model) == PointEstimate`
+then `getpersonlocations` must return a vector of values corresponding to the dimensionality
+of the person parameters.
+
+If `person_dimensionality(model) == Univariate` and `estimation_type(model) == SamplingEstimate`
+then `getpersonlocations` must return a vector of values with the length equal to the number
+of samples drawn.
+
+If `person_dimensionality(model) == Multivariate` and `estimateion_type(model) == SamplingEstimate`
+then `getpersonlocations` must return a matrix with rows corresponding to the drawn samples
+and columns corresponding to the dimension of the person parameter.
 """
 function getpersonlocations end
 

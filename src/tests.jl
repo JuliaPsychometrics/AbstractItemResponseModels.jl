@@ -10,8 +10,8 @@ import AbstractItemResponseModels:
     iif,
     expected_score,
     information,
-    getitemlocations,
-    getpersonlocations
+    get_item_locations,
+    get_person_locations
 
 using AbstractItemResponseModels
 using Test
@@ -44,23 +44,23 @@ estimation_type(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = ET
 
 # methods
 function irf(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
-    checkresponsetype(RT, y)
+    check_response_type(RT, y)
     return 0.0
 end
 
 function irf(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
-    checkresponsetype(RT, y)
+    check_response_type(RT, y)
     nsamples = 10
     return fill(0.0, nsamples)
 end
 
 function iif(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
-    checkresponsetype(RT, y)
+    check_response_type(RT, y)
     return 1.0
 end
 
 function iif(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
-    checkresponsetype(RT, y)
+    check_response_type(RT, y)
     nsamples = 10
     return fill(1.0, nsamples)
 end
@@ -105,7 +105,7 @@ function fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where {RT,PD,ID
     return FakeIRM{RT,PD,ID,ET}(data)
 end
 
-function getitemlocations(
+function get_item_locations(
     model::FakeIRM{RT,PD,Univariate,PointEstimate},
     i,
     y,
@@ -113,7 +113,7 @@ function getitemlocations(
     return 0.0
 end
 
-function getitemlocations(
+function get_item_locations(
     model::FakeIRM{RT,PD,Multivariate,PointEstimate},
     i,
     y,
@@ -121,7 +121,7 @@ function getitemlocations(
     return zeros(2)
 end
 
-function getitemlocations(
+function get_item_locations(
     model::FakeIRM{RT,PD,Univariate,SamplingEstimate},
     i,
     y,
@@ -129,7 +129,7 @@ function getitemlocations(
     return zeros(10)
 end
 
-function getitemlocations(
+function get_item_locations(
     model::FakeIRM{RT,PD,Multivariate,SamplingEstimate},
     i,
     y,
@@ -137,25 +137,25 @@ function getitemlocations(
     return zeros(10, 2)
 end
 
-function getpersonlocations(model::FakeIRM{RT,Univariate,ID,PointEstimate}, i) where {RT,ID}
+function get_person_locations(model::FakeIRM{RT,Univariate,ID,PointEstimate}, i) where {RT,ID}
     return 0.0
 end
 
-function getpersonlocations(
+function get_person_locations(
     model::FakeIRM{RT,Multivariate,ID,PointEstimate},
     i,
 ) where {RT,ID}
     return zeros(2)
 end
 
-function getpersonlocations(
+function get_person_locations(
     model::FakeIRM{RT,Univariate,ID,SamplingEstimate},
     i,
 ) where {RT,ID}
     return zeros(10)
 end
 
-function getpersonlocations(
+function get_person_locations(
     model::FakeIRM{RT,Multivariate,ID,SamplingEstimate},
     i,
 ) where {RT,ID}
@@ -366,11 +366,11 @@ function test_getters(model)
     idim = item_dimensionality(model)
 
     @testset "getters" begin
-        @testset "getitemlocations" begin
-            @test getitemlocations(model, 1, 1) isa out_type(et, idim)
+        @testset "get_item_locations" begin
+            @test get_item_locations(model, 1, 1) isa out_type(et, idim)
         end
-        @testset "getpersonlocations" begin
-            @test getpersonlocations(model, 1) isa out_type(et, pdim)
+        @testset "get_person_locations" begin
+            @test get_person_locations(model, 1) isa out_type(et, pdim)
         end
     end
 end

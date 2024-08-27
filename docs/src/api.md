@@ -34,15 +34,15 @@ Nominal
 Ordinal
 Continuous
 response_type
-checkresponsetype
+check_response_type
 ```
 
 ## Methods
 ```@docs
 expected_score
 fit
-getitemlocations
-getpersonlocations
+get_item_locations
+get_person_locations
 iif
 information
 irf

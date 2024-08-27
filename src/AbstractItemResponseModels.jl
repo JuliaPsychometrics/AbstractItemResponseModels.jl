@@ -7,10 +7,10 @@ export ItemResponseModel
 export irf, iif
 export expected_score, information
 export fit, predict
-export getitemlocations, getpersonlocations
+export get_item_locations, get_person_locations
 
 export ResponseType,
-    Dichotomous, Nominal, Ordinal, Continuous, response_type, checkresponsetype
+    Dichotomous, Nominal, Ordinal, Continuous, response_type, check_response_type
 export Dimensionality, Univariate, Multivariate, item_dimensionality, person_dimensionality
 export EstimationType, PointEstimate, SamplingEstimate, DistributionEstimate, estimation_type
 
@@ -31,8 +31,8 @@ Additionally `T <: ItemResponseModel` must implement the following interface:
 - [`iif`](@ref): An item information function returning the information of answering with
   a particular response on an item given an ability estimate.
 - [`fit`](@ref): A function fitting an item response model of type `T` to observed data.
-- [`getitemlocations`](@ref): A function returning the item locations for a given item.
-- [`getpersonlocations`](@ref): A function returning the person locations for a given person.
+- [`get_item_locations`](@ref): A function returning the item locations for a given item.
+- [`get_person_locations`](@ref): A function returning the person locations for a given person.
 """
 abstract type ItemResponseModel end
 
@@ -149,9 +149,9 @@ function fit end
 
 
 """
-    getitemlocations(model::ItemResponseModel, i, y)::Real
-    getitemlocations(model::ItemResponseModel, i, y)::AbstractVector{<:Real}
-    getitemlocations(model::ItemResponseModel, i, y)::AbstractMatrix{<:Real}
+    get_item_locations(model::ItemResponseModel, i, y)::Real
+    get_item_locations(model::ItemResponseModel, i, y)::AbstractVector{<:Real}
+    get_item_locations(model::ItemResponseModel, i, y)::AbstractMatrix{<:Real}
 
 Get the item locations for an item from an [`ItemResponseModel`](@ref).
 
@@ -162,26 +162,26 @@ Get the item locations for an item from an [`ItemResponseModel`](@ref).
 
 ## Return values
 If `item_dimensionality(model) == Univariate` and `estimation_type(model) == PointEstimate`
-then `getitemlocations` must return a single scalar value.
+then `get_item_locations` must return a single scalar value.
 
 If `item_dimensionality(model) == Multivariate` and `estimation_type(model) == PointEstimate`
-then `getitemlocations` must return a vector of values corresponding to the dimensionality
+then `get_item_locations` must return a vector of values corresponding to the dimensionality
 of the item parameters.
 
 If `item_dimensionality(model) == Univariate` and `estimation_type(model) == SamplingEstimate`
-then `getitemlocations` must return a vector of values with the length equal to the number
+then `get_item_locations` must return a vector of values with the length equal to the number
 of samples drawn.
 
 If `item_dimensionality(model) == Multivariate` and `estimation_type(model) == SamplingEstimate`
-then `getitemlocations` must return a matrix with rows corresponding to the drawn samples
+then `get_item_locations` must return a matrix with rows corresponding to the drawn samples
 and columns corresponding to the dimension of the item parameter.
 """
-function getitemlocations end
+function get_item_locations end
 
 """
-    getpersonlocations(model::ItemResponseModel, p)::Real
-    getpersonlocations(model::ItemResponseModel, p)::AbstractVector{<:Real}
-    getpersonlocations(model::ItemResponseModel, p)::AbstractMatrix{<:Real}
+    get_person_locations(model::ItemResponseModel, p)::Real
+    get_person_locations(model::ItemResponseModel, p)::AbstractVector{<:Real}
+    get_person_locations(model::ItemResponseModel, p)::AbstractMatrix{<:Real}
 
 Get the person locations for an person from an [`ItemResponseModel`](@ref).
 
@@ -191,23 +191,25 @@ Get the person locations for an person from an [`ItemResponseModel`](@ref).
 
 ## Return values
 If `person_dimensionality(model) == Univariate` and `estimation_type(model) == PointEstimate`
-then `getpersonlocations` must return a single scalar value.
+then `get_person_locations` must return a single scalar value.
 
 If `person_dimensionality(model) == Multivariate` and `estimation_type(model) == PointEstimate`
-then `getpersonlocations` must return a vector of values corresponding to the dimensionality
+then `get_person_locations` must return a vector of values corresponding to the dimensionality
 of the person parameters.
 
 If `person_dimensionality(model) == Univariate` and `estimation_type(model) == SamplingEstimate`
-then `getpersonlocations` must return a vector of values with the length equal to the number
+then `get_person_locations` must return a vector of values with the length equal to the number
 of samples drawn.
 
 If `person_dimensionality(model) == Multivariate` and `estimateion_type(model) == SamplingEstimate`
-then `getpersonlocations` must return a matrix with rows corresponding to the drawn samples
+then `get_person_locations` must return a matrix with rows corresponding to the drawn samples
 and columns corresponding to the dimension of the person parameter.
 """
-function getpersonlocations end
+function get_person_locations end
 
 include("traits/traits.jl")
 include("tests.jl")
+
+include("deprecated.jl")
 
 end

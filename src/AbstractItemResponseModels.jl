@@ -207,7 +207,7 @@ and columns corresponding to the dimension of the person parameter.
 """
 function getpersonlocations end
 
-include("traits.jl")
+include("traits/traits.jl")
 include("tests.jl")
 
 end

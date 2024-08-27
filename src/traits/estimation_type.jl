@@ -1,0 +1,34 @@
+"""
+    EstimationType
+
+The `EstimationType` of an [`ItemResponseModel`](@ref) describes the type of parameter
+estimation for the model.
+"""
+abstract type EstimationType end
+
+"""
+    PointEstimate <: EstimationType
+
+Defines that the parameters of an [`ItemResponseModel`](@ref) are estimated by a single
+point estimate. Thus, parameters for a model with `estimation_type(model) == PointEstimate`
+are single real-valued numbers.
+"""
+abstract type PointEstimate <: EstimationType end
+
+"""
+    SamplingEstimate <: EstimationType
+
+Defines that the parameters of an [`ItemResponseModel`](@ref) are estimated by a sampling
+procedure. Thus, parameters for a model with `estimation_type(model) == SamplingEstimate`
+are vectors of real-valued numbers where the length of the parameter vector is equal to the
+number of samples drawn.
+"""
+abstract type SamplingEstimate <: EstimationType end
+
+"""
+    estimation_type(::T) -> EstimationType
+
+Return the [`EstimationType`](@ref) of an [`ItemResponseModel`].
+"""
+estimation_type(::T) where {T} = estimation_type(T)
+estimation_type(T::Type) = throw(MethodError(estimation_type, (T,)))

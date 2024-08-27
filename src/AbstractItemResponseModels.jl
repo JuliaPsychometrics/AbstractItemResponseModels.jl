@@ -12,7 +12,7 @@ export getitemlocations, getpersonlocations
 export ResponseType,
     Dichotomous, Nominal, Ordinal, Continuous, response_type, checkresponsetype
 export Dimensionality, Univariate, Multivariate, item_dimensionality, person_dimensionality
-export EstimationType, PointEstimate, SamplingEstimate, estimation_type
+export EstimationType, PointEstimate, SamplingEstimate, DistributionEstimate, estimation_type
 
 """
     ItemResponseModel

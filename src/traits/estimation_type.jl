@@ -26,6 +26,16 @@ number of samples drawn.
 abstract type SamplingEstimate <: EstimationType end
 
 """
+    DistributionEstimate <: EstimationType
+
+Defines that the parameters of an [`ItemResponseModel`](@ref) are estimated by a distribution.
+Thus, parameters for a model with `estimation_type(model) == DistributionEstimate` are
+probability distributions that implement common interface functions for distributions, e.g.
+[`rand`](@ref), [`mean`](@ref), or [`quantile`](@ref).
+"""
+abstract type DistributionEstimate <: EstimationType end
+
+"""
     estimation_type(::T) -> EstimationType
 
 Return the [`EstimationType`](@ref) of an [`ItemResponseModel`].

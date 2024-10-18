@@ -42,6 +42,7 @@ Additionally `T <: ItemResponseModel` must implement the following interface:
 abstract type ItemResponseModel end
 
 """
+    irf(model::ItemResponseModel, theta, i)
     irf(model::ItemResponseModel, theta, i, y)
 
 Evaluate the item response function of an [`ItemResponseModel`](@ref).
@@ -62,6 +63,7 @@ a vector of values with the length equal to the number of samples.
 function irf end
 
 """
+    iif(model::ItemResponseModel, theta, i)
     iif(model::ItemResponseModel, theta, i, y)
 
 ## Arguments
@@ -108,6 +110,10 @@ of values with the length equal to the number of samples drawn.
 """
 function expected_score end
 
+function expected_score(model::ItemResponseModel, theta; kwargs...)
+    return expected_score(model, theta, each_item_index(model); kwargs...)
+end
+
 """
     information(model::ItemResponseModel, theta; scoring_function)
     information(model::ItemResponseModel, theta, is; scoring_function)
@@ -130,6 +136,10 @@ If `estimation_type(model) == SamplingEstimate` then `information` must return a
 of values with the length equal to the number of samples drawn.
 """
 function information end
+
+function information(model::ItemResponseModel, theta; kwargs...)
+    return information(model, theta, each_item_index(model); kwargs...)
+end
 
 """
     fit(::Type{T}, data::AbstractMatrix, args...; kwargs...)

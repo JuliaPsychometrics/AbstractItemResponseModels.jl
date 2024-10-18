@@ -1,26 +1,36 @@
 using AbstractItemResponseModels
 using Documenter
+using DocumenterVitepress
 
-DocMeta.setdocmeta!(AbstractItemResponseModels, :DocTestSetup, :(using AbstractItemResponseModels); recursive=true)
+DocMeta.setdocmeta!(
+    AbstractItemResponseModels,
+    :DocTestSetup,
+    :(using AbstractItemResponseModels);
+    recursive = true,
+)
 
 makedocs(;
-    modules=[AbstractItemResponseModels],
-    authors="Philipp Gewessler",
-    repo="https://github.com/JuliaPsychometrics/AbstractItemResponseModels.jl/blob/{commit}{path}#{line}",
-    sitename="AbstractItemResponseModels.jl",
-    format=Documenter.HTML(;
-        prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://JuliaPsychometrics.github.io/AbstractItemResponseModels.jl",
-        edit_link="main",
-        assets=String[]
+    sitename = "AbstractItemResponseModels.jl",
+    authors = "Philipp Gewessler",
+    modules = [AbstractItemResponseModels],
+    warnonly = true,
+    checkdocs = :all,
+    format = DocumenterVitepress.MarkdownVitepress(
+        repo = "github.com/JuliaPsychometrics/AbstractItemResponseModels.jl",
+        devbranch = "main",
+        devurl = "dev",
     ),
-    pages=[
-        "Home" => "index.md",
-        "API" => "api.md"
-    ]
+    clean = true,
+    draft = false,
+    source = "src",
+    build = "build",
+    pages = ["Home" => "index.md", "API" => "api.md"],
 )
 
 deploydocs(;
-    repo="github.com/JuliaPsychometrics/AbstractItemResponseModels.jl",
-    devbranch="main"
+    repo = "github.com/JuliaPsychometrics/AbstractItemResponseModels.jl",
+    target = "build",
+    branch = "gh-pages",
+    devbranch = "main",
+    push_preview = true,
 )

@@ -6,7 +6,8 @@ The `ResponseType` defines the scale level of item responses for a given [`ItemR
 abstract type ResponseType end
 
 """
-    response_type(::T)::ResponseType
+    response_type(model::ItemResponseModel)
+    response_type(::Type{<:ItemResponseModel})
 
 Return the [`ResponseType`](@ref) of an [`ItemResponseModel`](@ref).
 """

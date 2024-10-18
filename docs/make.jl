@@ -24,7 +24,15 @@ makedocs(;
     draft = false,
     source = "src",
     build = "build",
-    pages = ["Home" => "index.md", "API" => "api.md"],
+    pages = [
+        "Home" => "index.md",
+        "References" => [
+            "Types" => "references/types.md",
+            "Traits" => "references/traits.md",
+            "Methods" => "references/methods.md",
+        ],
+        "API" => "api.md",
+    ],
 )
 
 deploydocs(;

@@ -160,7 +160,6 @@ A fitted model with `T <: ItemResponseModel`.
 function fit end
 
 """
-    get_item_locations(model::ItemResponseModel, i, y)
     get_item_locations(model::ItemResponseModel, i)
 
 Get the item locations for an item from an [`ItemResponseModel`](@ref).
@@ -168,7 +167,6 @@ Get the item locations for an item from an [`ItemResponseModel`](@ref).
 ## Arguments
 - `model`: An [`ItemResponseModel`](@ref)
 - `i`: A unique item identifier
-- `y`: Response value(s)
 
 ## Return values
 If `item_dimensionality(model) == Univariate` and `estimation_type(model) == PointEstimate`
@@ -238,7 +236,7 @@ Create an iterable object visiting each person index of an item response model.
 function each_person_index end
 
 include("traits/traits.jl")
-# include("tests.jl")
+include("tests.jl")
 
 include("deprecated.jl")
 

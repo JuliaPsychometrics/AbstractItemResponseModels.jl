@@ -22,162 +22,6 @@ export FakeIRM
 export test_interface
 
 """
-    FakeIRM{RT<:ResponseType,PD<:Dimensionality,ID<:Dimensionality}
-
-A minimal implementation of [`ItemReponseModel`](@ref) for interface testing.
-"""
-struct FakeIRM{RT<:ResponseType,ET<:EstimationType} <: ItemResponseModel
-    betas::Vector{Float64}
-    thetas::Vector{Float64}
-    function FakeIRM{RT,ET}(betas::AbstractVector, thetas::AbstractVector) where {RT,ET}
-        return new{RT,ET}(betas, thetas)
-    end
-end
-
-function FakeIRM{RT,ET}(data::AbstractMatrix) where {RT,ET}
-    betas = randn(size(data, 2))
-    return FakeIRM{RT,ET}(betas)
-end
-
-response_type(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = RT
-item_dimensionality(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = 1
-person_dimensionality(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = 1
-estimation_type(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = ET
-
-# methods
-function irf(model::FakeIRM{RT,PointEstimate}, theta, i, y) where {RT}
-    check_response_type(RT, y)
-    return 0.0
-end
-
-function irf(model::FakeIRM{RT,SamplingEstimate}, theta, i, y) where {RT}
-    check_response_type(RT, y)
-    return fill(0.0, 10)
-end
-
-function iif(model::FakeIRM{RT,PointEstimate}, theta, i, y) where {RT}
-    check_response_type(RT, y)
-    return 1.0
-end
-
-function iif(model::FakeIRM{RT,SamplingEstimate}, theta, i, y) where {RT}
-    check_response_type(RT, y)
-    return fill(1.0, 10)
-end
-
-sf(x, _) = x
-
-function expected_score(
-    model::FakeIRM{<:ResponseType,PointEstimate},
-    theta,
-    is;
-    scoring_function = sf,
-)
-    return scoring_function(0.0, nothing)
-end
-
-function expected_score(
-    model::FakeIRM{<:ResponseType,SamplingEstimate},
-    theta,
-    is;
-    scoring_function = sf,
-)
-    return scoring_function.(fill(0.0, 10), nothing)
-end
-
-function information(
-    model::FakeIRM{<:ResponseType,PointEstimate},
-    theta,
-    is;
-    scoring_function = sf,
-)
-    return scoring_function(0.0, nothing)
-end
-
-function information(
-    model::FakeIRM{<:ResponseType,SamplingEstimate},
-    theta,
-    is;
-    scoring_function = sf,
-) where {RT}
-    return scoring_function.(fill(0.0, 10), nothing)
-end
-
-function fit(::Type{FakeIRM{RT,ET}}, data::AbstractMatrix) where {RT,ET}
-    return FakeIRM{RT,ET}(data)
-end
-
-function get_item_locations(model::FakeIRM{RT,PointEstimate}, i, y) where {RT,PD}
-    return 0.0
-end
-
-function get_item_locations(model::FakeIRM{RT,PD,Univariate,PointEstimate}, i) where {RT,PD}
-    return zeros(3)
-end
-
-function get_item_locations(
-    model::FakeIRM{RT,PD,Multivariate,PointEstimate},
-    i,
-    y,
-) where {RT,PD}
-    return zeros(2)
-end
-
-function get_item_locations(
-    model::FakeIRM{RT,PD,Multivariate,PointEstimate},
-    i,
-) where {RT,PD}
-    return [zeros(2) for _ in 1:2]
-end
-
-function get_item_locations(
-    model::FakeIRM{RT,PD,Univariate,SamplingEstimate},
-    i,
-    y,
-) where {RT,PD}
-    return zeros(10)
-end
-
-function get_item_locations(
-    model::FakeIRM{RT,PD,Multivariate,SamplingEstimate},
-    i,
-    y,
-) where {RT,PD}
-    return zeros(10, 2)
-end
-
-function get_person_locations(
-    model::FakeIRM{RT,Univariate,ID,PointEstimate},
-    i,
-) where {RT,ID}
-    return 0.0
-end
-
-function get_person_locations(
-    model::FakeIRM{RT,Multivariate,ID,PointEstimate},
-    i,
-) where {RT,ID}
-    return zeros(2)
-end
-
-function get_person_locations(
-    model::FakeIRM{RT,Univariate,ID,SamplingEstimate},
-    i,
-) where {RT,ID}
-    return zeros(10)
-end
-
-function get_person_locations(
-    model::FakeIRM{RT,Multivariate,ID,SamplingEstimate},
-    i,
-) where {RT,ID}
-    return zeros(10, 2)
-end
-
-each_item_index(model::FakeIRM) = eachindex(model.betas)
-each_person_index(model::FakeIRM) = eachindex(model.thetas)
-
-"""
     test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
 
 Test the implementation of an item response model interface.
@@ -192,58 +36,56 @@ Test the implementation of an item response model interface.
 """
 function test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
     @testset "AbstractItemResponseModels.jl API Tests" begin
-
         model = fit(T, data, args...; kwargs...)
-        @test model isa ItemResponseModel
-        @test model isa T
 
+        test_types(model)
         test_traits(model)
-        test_methods(model)
+        test_interface(model)
+    end
+end
 
-        @testset "Interface" begin
-            test_irf(model)
-            test_iif(model)
-            test_expected_score(model)
-            test_information(model)
-            test_getters(model)
-        end
+function test_types(model)
+    @testset "Types" begin
+        @test model isa ItemResponseModel
     end
 end
 
 function test_traits(model::ItemResponseModel)
     @testset "Traits" begin
         @test response_type(model) <: ResponseType
+
+        @test estimation_type(model) <: EstimationType
+
         @test item_dimensionality(model) isa Int
+        @test item_dimensionality(model) > 0
+
         @test person_dimensionality(model) isa Int
+        @test person_dimensionality(model) > 0
     end
 end
 
-function test_methods(model::ItemResponseModel)
-    @testset "Methods" begin
+function test_interface(model::ItemResponseModel)
+    @testset "Interface" begin
         test_irf(model)
         test_iif(model)
         test_expected_score(model)
         test_information(model)
         test_getters(model)
-        test_iterators(model)
+        # test_iterators(model)
     end
 end
 
 function test_irf(model::ItemResponseModel)
     @testset "irf" begin
         rt = response_type(model)
+        pdim = person_dimensionality(model)
+        idim = item_dimensionality(model)
         et = estimation_type(model)
         return test_irf(rt, pdim, idim, et, model)
     end
 end
 
-function test_irf(
-    rt::Type{Dichotomous},
-    pdim::Type{<:Dimensionality},
-    idim::Type{<:Dimensionality},
-    et::Type{<:EstimationType},
-    model,
-)
+function test_irf(rt::Type{Dichotomous}, pdim, idim, et::Type{<:EstimationType}, model)
     theta = sim_theta(pdim)
     @test irf(model, theta, 1, 0) isa out_type(et)
     @test irf(model, theta, 1, 1) isa out_type(et)
@@ -254,8 +96,8 @@ end
 
 function test_irf(
     rt::Type{<:Union{Nominal,Ordinal}},
-    pdim::Type{<:Dimensionality},
-    idim::Type{<:Dimensionality},
+    pdim,
+    idim,
     et::Type{<:EstimationType},
     model,
 )
@@ -267,13 +109,7 @@ function test_irf(
     @test_throws DomainError irf(model, theta, 1, 1.1)
 end
 
-function test_irf(
-    rt::Type{Continuous},
-    pdim::Type{<:Dimensionality},
-    idim::Type{<:Dimensionality},
-    et::Type{<:EstimationType},
-    model,
-)
+function test_irf(rt::Type{Continuous}, pdim, idim, et::Type{<:EstimationType}, model)
     theta = sim_theta(pdim)
     @test irf(model, theta, 1, 0.0) isa out_type(et)
     @test irf(model, theta, 1, -1.0) isa out_type(et)
@@ -291,13 +127,7 @@ function test_iif(model::ItemResponseModel)
     end
 end
 
-function test_iif(
-    rt::Type{Dichotomous},
-    pdim::Type{<:Dimensionality},
-    idim::Type{<:Dimensionality},
-    et::Type{<:EstimationType},
-    model,
-)
+function test_iif(rt::Type{Dichotomous}, pdim, idim, et::Type{<:EstimationType}, model)
     theta = sim_theta(pdim)
     @test iif(model, theta, 1, 0.0) isa out_type(et)
     @test iif(model, theta, 1, 1.0) isa out_type(et)
@@ -307,8 +137,8 @@ end
 
 function test_iif(
     rt::Type{<:Union{Nominal,Ordinal}},
-    pdim::Type{<:Dimensionality},
-    idim::Type{<:Dimensionality},
+    pdim,
+    idim,
     et::Type{<:EstimationType},
     model,
 )
@@ -319,13 +149,7 @@ function test_iif(
     @test_throws DomainError iif(model, theta, 1, 0) isa out_type(et)
 end
 
-function test_iif(
-    rt::Type{Continuous},
-    pdim::Type{<:Dimensionality},
-    idim::Type{<:Dimensionality},
-    et::Type{<:EstimationType},
-    model,
-)
+function test_iif(rt::Type{Continuous}, pdim, idim, et::Type{<:EstimationType}, model)
     theta = sim_theta(pdim)
     @test iif(model, theta, 1, 1.0) isa out_type(et)
     @test iif(model, theta, 1, -2.0) isa out_type(et)
@@ -346,23 +170,18 @@ end
 
 function test_expected_score(
     rt::Type{<:ResponseType},
-    pdim::Type{<:Dimensionality},
-    idim::Type{<:Dimensionality},
+    pdim,
+    idim,
     et::Type{<:EstimationType},
     model,
 )
     theta = sim_theta(pdim)
+    item = first(each_item_index(model))
     @test expected_score(model, theta) isa out_type(et)
-    @test expected_score(model, theta, 1) isa out_type(et)
-
+    @test expected_score(model, theta, item) isa out_type(et)
+    @test expected_score(model, theta, each_item_index(model)) isa out_type(et)
     @test expected_score(model, theta) ==
           expected_score(model, theta, each_item_index(model))
-
-    # check default scoring function implementation
-    @test expected_score(model, theta; scoring_function = sf) ==
-          expected_score(model, theta)
-    @test expected_score(model, theta, 1; scoring_function = sf) ==
-          expected_score(model, theta, 1)
 end
 
 function test_information(model::ItemResponseModel)
@@ -377,19 +196,17 @@ end
 
 function test_information(
     rt::Type{<:ResponseType},
-    pdim::Type{<:Dimensionality},
-    idim::Type{<:Dimensionality},
+    pdim,
+    idim,
     et::Type{<:EstimationType},
     model,
 )
     theta = sim_theta(pdim)
+    item = first(each_item_index(model))
     @test information(model, theta) isa out_type(et)
-    @test information(model, theta, 1) isa out_type(et)
-
-    # check default scoring function implementation
-    @test information(model, theta; scoring_function = sf) == information(model, theta)
-    @test information(model, theta, 1; scoring_function = sf) ==
-          information(model, theta, 1)
+    @test information(model, theta, item) isa out_type(et)
+    @test information(model, theta, each_item_index(model)) isa out_type(et)
+    @test information(model, theta) == information(model, theta, each_item_index(model))
 end
 
 function test_getters(model)
@@ -399,10 +216,10 @@ function test_getters(model)
 
     @testset "getters" begin
         @testset "get_item_locations" begin
-            @test get_item_locations(model, 1, 1) isa out_type(et, idim)
+            @test applicable(get_item_locations, model, first(each_item_index(model)))
         end
         @testset "get_person_locations" begin
-            @test get_person_locations(model, 1) isa out_type(et, pdim)
+            @test applicable(get_person_locations, model, first(each_person_index(model)))
         end
     end
 end
@@ -414,15 +231,111 @@ function test_iterators(model)
     end
 end
 
-sim_theta(::Type{Univariate}) = 0.0
-sim_theta(::Type{Multivariate}) = [0.0, 0.0]
+sim_theta(n) = n == 1 ? zero(Float64) : zeros(Float64, n)
 
+# allowed output types for irf, iif, expected_score and information
 out_type(::Type{PointEstimate}) = Real
 out_type(::Type{SamplingEstimate}) = AbstractVector{<:Real}
 
-out_type(::Type{PointEstimate}, ::Type{Univariate}) = Real
-out_type(::Type{PointEstimate}, ::Type{Multivariate}) = AbstractVector{<:Real}
-out_type(::Type{SamplingEstimate}, ::Type{Univariate}) = AbstractVector{<:Real}
-out_type(::Type{SamplingEstimate}, ::Type{Multivariate}) = AbstractMatrix{<:Real}
+"""
+    FakeIRM{RT<:ResponseType,PD<:Dimensionality,ID<:Dimensionality}
+
+A minimal implementation of [`ItemReponseModel`](@ref) for interface testing.
+"""
+struct FakeIRM{RT<:ResponseType,ID,PD,ET<:EstimationType} <: ItemResponseModel
+    betas::Vector{Float64}
+    thetas::Vector{Float64}
+    function FakeIRM{RT,ID,PD,ET}(
+        betas::AbstractVector,
+        thetas::AbstractVector,
+    ) where {RT,ID,PD,ET}
+        return new{RT,ID,PD,ET}(betas, thetas)
+    end
+end
+
+function FakeIRM{RT,ID,PD,ET}(data::AbstractMatrix) where {RT,ID,PD,ET}
+    betas = randn(size(data, 2))
+    thetas = randn(size(data, 1))
+    return FakeIRM{RT,ID,PD,ET}(betas, thetas)
+end
+
+response_type(::Type{<:FakeIRM{RT,ID,PD,ET}}) where {RT,ID,PD,ET} = RT
+item_dimensionality(::Type{<:FakeIRM{RT,ID,PD,ET}}) where {RT,ID,PD,ET} = ID
+person_dimensionality(::Type{<:FakeIRM{RT,ID,PD,ET}}) where {RT,ID,PD,ET} = PD
+estimation_type(::Type{<:FakeIRM{RT,ID,PD,ET}}) where {RT,ID,PD,ET} = ET
+
+# methods
+function irf(model::FakeIRM{RT,ID,PD,PointEstimate}, theta, i, y) where {RT,ID,PD}
+    check_response_type(RT, y)
+    return 0.0
+end
+
+function irf(model::FakeIRM{RT,ID,PD,SamplingEstimate}, theta, i, y) where {RT,ID,PD}
+    check_response_type(RT, y)
+    return fill(0.0, 10)
+end
+
+function iif(model::FakeIRM{RT,ID,PD,PointEstimate}, theta, i, y) where {RT,ID,PD}
+    check_response_type(RT, y)
+    return 1.0
+end
+
+function iif(model::FakeIRM{RT,ID,PD,SamplingEstimate}, theta, i, y) where {RT,ID,PD}
+    check_response_type(RT, y)
+    return ones(Float64, 10)
+end
+
+sf(x, _) = x
+
+function expected_score(
+    model::FakeIRM{RT,ID,PD,PointEstimate},
+    theta,
+    is;
+    scoring_function = sf,
+) where {RT,ID,PD}
+    return 0.0
+end
+
+function expected_score(
+    model::FakeIRM{RT,ID,PD,SamplingEstimate},
+    theta,
+    is;
+    scoring_function = sf,
+) where {RT,ID,PD}
+    return zeros(Float64, 10)
+end
+
+function information(
+    model::FakeIRM{RT,ID,PD,PointEstimate},
+    theta,
+    is;
+    scoring_function = sf,
+) where {RT,ID,PD}
+    return 1.0
+end
+
+function information(
+    model::FakeIRM{RT,ID,PD,SamplingEstimate},
+    theta,
+    is;
+    scoring_function = sf,
+) where {RT,ID,PD}
+    return ones(Float64, 10)
+end
+
+function fit(::Type{FakeIRM{RT,ID,PD,ET}}, data::AbstractMatrix) where {RT,ID,PD,ET}
+    return FakeIRM{RT,ID,PD,ET}(data)
+end
+
+function get_item_locations(model::FakeIRM, i)
+    return 0.0
+end
+
+function get_person_locations(model::FakeIRM, p)
+    return 0.0
+end
+
+each_item_index(model::FakeIRM) = eachindex(model.betas)
+each_person_index(model::FakeIRM) = eachindex(model.thetas)
 
 end

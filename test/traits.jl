@@ -13,17 +13,18 @@
 
     struct Implement <: ItemResponseModel end
     AbstractItemResponseModels.response_type(::Type{Implement}) = Dichotomous
-    AbstractItemResponseModels.item_dimensionality(::Type{Implement}) = Multivariate
-    AbstractItemResponseModels.person_dimensionality(::Type{Implement}) = Univariate
+    AbstractItemResponseModels.item_dimensionality(::Type{Implement}) = 1
+    AbstractItemResponseModels.person_dimensionality(::Type{Implement}) = 2
     AbstractItemResponseModels.estimation_type(::Type{Implement}) = PointEstimate
+
     @test response_type(Implement) == Dichotomous
-    @test item_dimensionality(Implement) == Multivariate
-    @test person_dimensionality(Implement) == Univariate
+    @test item_dimensionality(Implement) == 1
+    @test person_dimensionality(Implement) == 2
     @test estimation_type(Implement) == PointEstimate
 
     implement_model = Implement()
     @test response_type(implement_model) == Dichotomous
-    @test item_dimensionality(implement_model) == Multivariate
-    @test person_dimensionality(implement_model) == Univariate
+    @test item_dimensionality(implement_model) == 1
+    @test person_dimensionality(implement_model) == 2
     @test estimation_type(implement_model) == PointEstimate
 end

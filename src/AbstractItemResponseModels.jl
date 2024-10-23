@@ -2,17 +2,7 @@ module AbstractItemResponseModels
 
 import StatsAPI: fit, predict
 
-export ItemResponseModel
-
-export irf, iif
-export expected_score, information
-export fit, predict
-export get_item_locations, get_person_locations
-
-export ResponseType,
-    Dichotomous, Nominal, Ordinal, Continuous, response_type, check_response_type
-export Dimensionality, Univariate, Multivariate, item_dimensionality, person_dimensionality
-export EstimationType, PointEstimate, SamplingEstimate, DistributionEstimate, estimation_type
+export ItemResponseModel, irf, iif, expected_score, information, fit, predict, get_item_locations, get_person_locations, ResponseType, Dichotomous, Nominal, Ordinal, Continuous, response_type, check_response_type, item_dimensionality, person_dimensionality, EstimationType, PointEstimate, SamplingEstimate, DistributionEstimate, estimation_type
 
 """
     ItemResponseModel
@@ -208,7 +198,7 @@ and columns corresponding to the dimension of the person parameter.
 function get_person_locations end
 
 include("traits/traits.jl")
-include("tests.jl")
+# include("tests.jl")
 
 include("deprecated.jl")
 

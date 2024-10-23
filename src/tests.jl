@@ -24,101 +24,93 @@ export test_interface
 
 A minimal implementation of [`ItemReponseModel`](@ref) for interface testing.
 """
-struct FakeIRM{RT<:ResponseType,PD<:Dimensionality,ID<:Dimensionality,ET<:EstimationType} <:
+struct FakeIRM{RT<:ResponseType,ET<:EstimationType} <:
        ItemResponseModel
     betas::Vector{Float64}
-    function FakeIRM{RT,PD,ID,ET}(betas::AbstractVector) where {RT,PD,ID,ET}
-        return new{RT,PD,ID,ET}(betas)
+    function FakeIRM{RT,ET}(betas::AbstractVector) where {RT,ET}
+        return new{RT,ET}(betas)
     end
 end
 
-function FakeIRM{RT,PD,ID,ET}(data::AbstractMatrix) where {RT,PD,ID,ET}
+function FakeIRM{RT,ET}(data::AbstractMatrix) where {RT,ET}
     betas = randn(size(data, 2))
-    return FakeIRM{RT,PD,ID,ET}(betas)
+    return FakeIRM{RT,ET}(betas)
 end
 
-response_type(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = RT
-item_dimensionality(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = ID
-person_dimensionality(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = PD
-estimation_type(::Type{<:FakeIRM{RT,PD,ID,ET}}) where {RT,PD,ID,ET} = ET
+response_type(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = RT
+item_dimensionality(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = ID
+person_dimensionality(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = PD
+estimation_type(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = ET
 
 # methods
-function irf(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
+function irf(model::FakeIRM{RT,PointEstimate}, theta, i, y::Real) where {RT}
     check_response_type(RT, y)
     return 0.0
 end
 
-function irf(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
+function irf(model::FakeIRM{RT,SamplingEstimate}, theta, i, y::Real) where {RT}
     check_response_type(RT, y)
     nsamples = 10
     return fill(0.0, nsamples)
 end
 
-function iif(model::FakeIRM{RT,PD,ID,PointEstimate}, theta, i, y::Real) where {RT,PD,ID}
+function iif(model::FakeIRM{RT,PointEstimate}, theta, i, y::Real) where {RT}
     check_response_type(RT, y)
     return 1.0
 end
 
-function iif(model::FakeIRM{RT,PD,ID,SamplingEstimate}, theta, i, y::Real) where {RT,PD,ID}
+function iif(model::FakeIRM{RT,SamplingEstimate}, theta, i, y::Real) where {RT}
     check_response_type(RT, y)
     nsamples = 10
     return fill(1.0, nsamples)
 end
 
 function expected_score(
-    model::FakeIRM{RT,PD,ID,PointEstimate},
+    model::FakeIRM{RT,PointEstimate},
     theta,
     is = nothing;
     scoring_function = identity,
-) where {RT,PD,ID}
+) where {RT}
     return scoring_function(0.0)
 end
 
 function expected_score(
-    model::FakeIRM{RT,PD,ID,SamplingEstimate},
+    model::FakeIRM{RT,SamplingEstimate},
     theta,
     is = nothing;
     scoring_function = identity,
-) where {RT,PD,ID}
+) where {RT}
     return scoring_function.(fill(0.0, 10))
 end
 
 function information(
-    model::FakeIRM{RT,PD,ID,PointEstimate},
+    model::FakeIRM{RT,PointEstimate},
     theta,
     is = nothing;
     scoring_function = identity,
-) where {RT,PD,ID}
+) where {RT}
     return scoring_function(0.0)
 end
 
 function information(
-    model::FakeIRM{RT,PD,ID,SamplingEstimate},
+    model::FakeIRM{RT,SamplingEstimate},
     theta,
     is = nothing;
     scoring_function = identity,
-) where {RT,PD,ID}
+) where {RT}
     return scoring_function.(fill(0.0, 10))
 end
 
-function fit(::Type{FakeIRM{RT,PD,ID,ET}}, data::AbstractMatrix) where {RT,PD,ID,ET}
-    return FakeIRM{RT,PD,ID,ET}(data)
+function fit(::Type{FakeIRM{RT,ET}}, data::AbstractMatrix) where {RT,ET}
+    return FakeIRM{RT,ET}(data)
 end
 
 function get_item_locations(
-    model::FakeIRM{RT,PD,Univariate,PointEstimate},
+    model::FakeIRM{RT,PointEstimate},
     i,
     y,
 ) where {RT,PD}
-    return 0.0
-end
-
-function get_item_locations(
-    model::FakeIRM{RT,PD,Multivariate,PointEstimate},
-    i,
-    y,
-) where {RT,PD}
-    return zeros(2)
+    return item_dimensionality(model) == 1 ? zero() : zeros(2)
 end
 
 function get_item_locations(
@@ -197,16 +189,14 @@ end
 function test_traits(model)
     @testset "Traits" begin
         @test response_type(model) <: ResponseType
-        @test item_dimensionality(model) <: Dimensionality
-        @test person_dimensionality(model) <: Dimensionality
+        @test item_dimensionality(model) isa Int
+        @test person_dimensionality(model) isa Int
     end
 end
 
 function test_irf(model::ItemResponseModel)
     @testset "irf" begin
         rt = response_type(model)
-        pdim = person_dimensionality(model)
-        idim = item_dimensionality(model)
         et = estimation_type(model)
         return test_irf(rt, pdim, idim, et, model)
     end

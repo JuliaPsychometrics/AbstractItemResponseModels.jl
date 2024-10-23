@@ -11,7 +11,9 @@ import AbstractItemResponseModels:
     expected_score,
     information,
     get_item_locations,
-    get_person_locations
+    get_person_locations,
+    each_item_index,
+    each_person_index
 
 using AbstractItemResponseModels
 using Test
@@ -24,11 +26,11 @@ export test_interface
 
 A minimal implementation of [`ItemReponseModel`](@ref) for interface testing.
 """
-struct FakeIRM{RT<:ResponseType,ET<:EstimationType} <:
-       ItemResponseModel
+struct FakeIRM{RT<:ResponseType,ET<:EstimationType} <: ItemResponseModel
     betas::Vector{Float64}
-    function FakeIRM{RT,ET}(betas::AbstractVector) where {RT,ET}
-        return new{RT,ET}(betas)
+    thetas::Vector{Float64}
+    function FakeIRM{RT,ET}(betas::AbstractVector, thetas::AbstractVector) where {RT,ET}
+        return new{RT,ET}(betas, thetas)
     end
 end
 
@@ -38,79 +40,94 @@ function FakeIRM{RT,ET}(data::AbstractMatrix) where {RT,ET}
 end
 
 response_type(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = RT
-item_dimensionality(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = ID
-person_dimensionality(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = PD
+item_dimensionality(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = 1
+person_dimensionality(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = 1
 estimation_type(::Type{<:FakeIRM{RT,ET}}) where {RT,ET} = ET
 
 # methods
-function irf(model::FakeIRM{RT,PointEstimate}, theta, i, y::Real) where {RT}
+function irf(model::FakeIRM{RT,PointEstimate}, theta, i, y) where {RT}
     check_response_type(RT, y)
     return 0.0
 end
 
-function irf(model::FakeIRM{RT,SamplingEstimate}, theta, i, y::Real) where {RT}
+function irf(model::FakeIRM{RT,SamplingEstimate}, theta, i, y) where {RT}
     check_response_type(RT, y)
-    nsamples = 10
-    return fill(0.0, nsamples)
+    return fill(0.0, 10)
 end
 
-function iif(model::FakeIRM{RT,PointEstimate}, theta, i, y::Real) where {RT}
+function iif(model::FakeIRM{RT,PointEstimate}, theta, i, y) where {RT}
     check_response_type(RT, y)
     return 1.0
 end
 
-function iif(model::FakeIRM{RT,SamplingEstimate}, theta, i, y::Real) where {RT}
+function iif(model::FakeIRM{RT,SamplingEstimate}, theta, i, y) where {RT}
     check_response_type(RT, y)
-    nsamples = 10
-    return fill(1.0, nsamples)
+    return fill(1.0, 10)
+end
+
+sf(x, _) = x
+
+function expected_score(
+    model::FakeIRM{<:ResponseType,PointEstimate},
+    theta,
+    is;
+    scoring_function = sf,
+)
+    return scoring_function(0.0, nothing)
 end
 
 function expected_score(
-    model::FakeIRM{RT,PointEstimate},
+    model::FakeIRM{<:ResponseType,SamplingEstimate},
     theta,
-    is = nothing;
-    scoring_function = identity,
-) where {RT}
-    return scoring_function(0.0)
-end
-
-function expected_score(
-    model::FakeIRM{RT,SamplingEstimate},
-    theta,
-    is = nothing;
-    scoring_function = identity,
-) where {RT}
-    return scoring_function.(fill(0.0, 10))
+    is;
+    scoring_function = sf,
+)
+    return scoring_function.(fill(0.0, 10), nothing)
 end
 
 function information(
-    model::FakeIRM{RT,PointEstimate},
+    model::FakeIRM{<:ResponseType,PointEstimate},
     theta,
-    is = nothing;
-    scoring_function = identity,
-) where {RT}
-    return scoring_function(0.0)
+    is;
+    scoring_function = sf,
+)
+    return scoring_function(0.0, nothing)
 end
 
 function information(
-    model::FakeIRM{RT,SamplingEstimate},
+    model::FakeIRM{<:ResponseType,SamplingEstimate},
     theta,
-    is = nothing;
-    scoring_function = identity,
+    is;
+    scoring_function = sf,
 ) where {RT}
-    return scoring_function.(fill(0.0, 10))
+    return scoring_function.(fill(0.0, 10), nothing)
 end
 
 function fit(::Type{FakeIRM{RT,ET}}, data::AbstractMatrix) where {RT,ET}
     return FakeIRM{RT,ET}(data)
 end
 
+function get_item_locations(model::FakeIRM{RT,PointEstimate}, i, y) where {RT,PD}
+    return 0.0
+end
+
+function get_item_locations(model::FakeIRM{RT,PD,Univariate,PointEstimate}, i) where {RT,PD}
+    return zeros(3)
+end
+
 function get_item_locations(
-    model::FakeIRM{RT,PointEstimate},
+    model::FakeIRM{RT,PD,Multivariate,PointEstimate},
     i,
     y,
 ) where {RT,PD}
-    return item_dimensionality(model) == 1 ? zero() : zeros(2)
+    return zeros(2)
+end
+
+function get_item_locations(
+    model::FakeIRM{RT,PD,Multivariate,PointEstimate},
+    i,
+) where {RT,PD}
+    return [zeros(2) for _ in 1:2]
 end
 
 function get_item_locations(
@@ -129,7 +146,10 @@ function get_item_locations(
     return zeros(10, 2)
 end
 
-function get_person_locations(model::FakeIRM{RT,Univariate,ID,PointEstimate}, i) where {RT,ID}
+function get_person_locations(
+    model::FakeIRM{RT,Univariate,ID,PointEstimate},
+    i,
+) where {RT,ID}
     return 0.0
 end
 
@@ -154,6 +174,9 @@ function get_person_locations(
     return zeros(10, 2)
 end
 
+each_item_index(model::FakeIRM) = eachindex(model.betas)
+each_person_index(model::FakeIRM) = eachindex(model.thetas)
+
 """
     test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
 
@@ -175,6 +198,7 @@ function test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
         @test model isa T
 
         test_traits(model)
+        test_methods(model)
 
         @testset "Interface" begin
             test_irf(model)
@@ -186,11 +210,22 @@ function test_interface(T::Type{<:ItemResponseModel}, data, args...; kwargs...)
     end
 end
 
-function test_traits(model)
+function test_traits(model::ItemResponseModel)
     @testset "Traits" begin
         @test response_type(model) <: ResponseType
         @test item_dimensionality(model) isa Int
         @test person_dimensionality(model) isa Int
+    end
+end
+
+function test_methods(model::ItemResponseModel)
+    @testset "Methods" begin
+        test_irf(model)
+        test_iif(model)
+        test_expected_score(model)
+        test_information(model)
+        test_getters(model)
+        test_iterators(model)
     end
 end
 
@@ -212,6 +247,7 @@ function test_irf(
     theta = sim_theta(pdim)
     @test irf(model, theta, 1, 0) isa out_type(et)
     @test irf(model, theta, 1, 1) isa out_type(et)
+    @test_throws DomainError irf(model, theta, 1, -1)
     @test_throws DomainError irf(model, theta, 1, 2)
     @test_throws DomainError irf(model, theta, 1, 1.1)
 end
@@ -226,6 +262,7 @@ function test_irf(
     theta = sim_theta(pdim)
     @test irf(model, theta, 1, 1) isa out_type(et)
     @test irf(model, theta, 1, 2.0) isa out_type(et)
+    @test_throws DomainError irf(model, theta, 1, -1)
     @test_throws DomainError irf(model, theta, 1, 0)
     @test_throws DomainError irf(model, theta, 1, 1.1)
 end
@@ -241,8 +278,7 @@ function test_irf(
     @test irf(model, theta, 1, 0.0) isa out_type(et)
     @test irf(model, theta, 1, -1.0) isa out_type(et)
     @test irf(model, theta, 1, 2.3) isa out_type(et)
-    @test_throws Exception irf(model, theta, 1, 1im)
-    @test_throws Exception irf(model, theta, 1, (0, 1))
+    @test_throws DomainError irf(model, theta, 1, 1im)
 end
 
 function test_iif(model::ItemResponseModel)
@@ -318,9 +354,14 @@ function test_expected_score(
     theta = sim_theta(pdim)
     @test expected_score(model, theta) isa out_type(et)
     @test expected_score(model, theta, 1) isa out_type(et)
-    @test expected_score(model, theta; scoring_function = identity) ==
+
+    @test expected_score(model, theta) ==
+          expected_score(model, theta, each_item_index(model))
+
+    # check default scoring function implementation
+    @test expected_score(model, theta; scoring_function = sf) ==
           expected_score(model, theta)
-    @test expected_score(model, theta, 1; scoring_function = identity) ==
+    @test expected_score(model, theta, 1; scoring_function = sf) ==
           expected_score(model, theta, 1)
 end
 
@@ -344,9 +385,10 @@ function test_information(
     theta = sim_theta(pdim)
     @test information(model, theta) isa out_type(et)
     @test information(model, theta, 1) isa out_type(et)
-    @test information(model, theta; scoring_function = identity) ==
-          information(model, theta)
-    @test information(model, theta, 1; scoring_function = identity) ==
+
+    # check default scoring function implementation
+    @test information(model, theta; scoring_function = sf) == information(model, theta)
+    @test information(model, theta, 1; scoring_function = sf) ==
           information(model, theta, 1)
 end
 
@@ -362,6 +404,13 @@ function test_getters(model)
         @testset "get_person_locations" begin
             @test get_person_locations(model, 1) isa out_type(et, pdim)
         end
+    end
+end
+
+function test_iterators(model)
+    @testset "Iterators" begin
+        @testset "each_item_index" begin end
+        @testset "each_person_index" begin end
     end
 end
 

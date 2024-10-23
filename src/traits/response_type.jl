@@ -6,7 +6,8 @@ The `ResponseType` defines the scale level of item responses for a given [`ItemR
 abstract type ResponseType end
 
 """
-    response_type(::T)::ResponseType
+    response_type(model::ItemResponseModel)
+    response_type(::Type{<:ItemResponseModel})
 
 Return the [`ResponseType`](@ref) of an [`ItemResponseModel`](@ref).
 """
@@ -22,8 +23,16 @@ If all responses are valid, `nothing` is returned.
 
 If any invalid responses are found, a `DomainError` is thrown.
 """
-check_response_type(::T, itr) where {T<:ResponseType} = check_response_type(T, itr)
-check_response_type(model::Type{<:ItemResponseModel}, itr) = check_response_type(response_type(model), itr)
+function check_response_type(::T, itr) where {T<:ResponseType}
+    for y in itr
+        check_response_type(T, y)
+    end
+    return nothing
+end
+
+function check_response_type(model::Type{<:ItemResponseModel}, itr)
+    return check_response_type(response_type(model), itr)
+end
 
 """
     Dichotomous <: ResponseType
@@ -32,10 +41,9 @@ Defines that an `ItemResponseModel` has a binary response variable.
 """
 abstract type Dichotomous <: ResponseType end
 
-function check_response_type(::Type{Dichotomous}, itr)
-    for y in itr
-        y in 0:1 || throw(DomainError(y, "Dichotomous response type only allows zero or one responses."))
-    end
+function check_response_type(::Type{Dichotomous}, y::Number)
+    err = DomainError(y, "Dichotomous response type only allows zero or one responses.")
+    y in 0:1 || throw(err)
     return nothing
 end
 
@@ -46,7 +54,7 @@ Defines that an [`ItemResponseModel`](@ref) has an unordered categorical respons
 """
 abstract type Nominal <: ResponseType end
 
-check_response_type(T::Type{Nominal}, itr) = _checkcategorical(T, itr)
+check_response_type(T::Type{Nominal}, y::Number) = check_categorical(T, y)
 
 """
     Ordinal <: ResponseType
@@ -55,12 +63,11 @@ Defines that an [`ItemResponseModel`](@ref) has an ordered categorical response 
 """
 abstract type Ordinal <: ResponseType end
 
-check_response_type(T::Type{Ordinal}, itr) = _checkcategorical(T, itr)
+check_response_type(T::Type{Ordinal}, y::Number) = check_categorical(T, y)
 
-function _checkcategorical(T, itr)
-    for y in itr
-        (y > 0 && rem(y, 1) == 0) || throw(DomainError(y, "$T response type only allows integer responses > 0."))
-    end
+function check_categorical(T, y::Number)
+    err = DomainError(y, "$T response type only allows integer responses > 0.")
+    (y > 0 && rem(y, 1) == 0) || throw(err)
     return nothing
 end
 
@@ -71,9 +78,8 @@ Defines that an [`ItemResponseModel`](@ref) has a continous response variable.
 """
 abstract type Continuous <: ResponseType end
 
-function check_response_type(::Type{Continuous}, itr)
-    for y in itr
-        y isa Real || throw(DomainError(y, "Continous response scale only allows for real valued responses."))
-    end
+function check_response_type(::Type{Continuous}, y::Number)
+    err = DomainError(y, "Continous response scale only allows for real valued responses.")
+    y isa Real || throw(err)
     return nothing
 end

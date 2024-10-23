@@ -36,7 +36,7 @@ probability distributions that implement common interface functions for distribu
 abstract type DistributionEstimate <: EstimationType end
 
 """
-    estimation_type(::T) -> EstimationType
+    estimation_type(model::ItemResponseModel)
 
 Return the [`EstimationType`](@ref) of an [`ItemResponseModel`].
 """

@@ -1,0 +1,12 @@
+package-lock.json
+node_modules/
+
+src/.vitepress/cache
+src/.vitepress/dist
+.vitepress/cache
+.vitepress/dist
+build/
+.vscode/
+
+
+Manifest.toml

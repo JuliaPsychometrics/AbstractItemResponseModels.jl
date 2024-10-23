@@ -1,139 +1,44 @@
-# AbstractItemResponseModels.jl
+```@raw html
+---
+layout: home
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaPsychometrics.github.io/AbstractItemResponseModels.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaPsychometrics.github.io/AbstractItemResponseModels.jl/dev/)
-[![Build Status](https://github.com/JuliaPsychometrics/AbstractItemResponseModels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JuliaPsychometrics/AbstractItemResponseModels.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/JuliaPsychometrics/AbstractItemResponseModels.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaPsychometrics/AbstractItemResponseModels.jl)
-
-This package provides a generic interface for item response models in Julia. It is targeted 
-at developers of item response model packages. Packages sucessfully implementing the 
-AbstractItemResponseModels interface will profit from features within [JuliaPsychometrics](https://github.com/JuliaPsychometrics/)
-such as plotting for their item response models (e.g. via [ItemResponsePlots.jl](https://github.com/JuliaPsychometrics/ItemResponsePlots.jl)).
-
-## Interface
-Creating a package using AbstractItemResponseModels requires that
-
-1. AbstractItemResponseModels.jl is added as a package dependency
-2. the AbstractItemResponseModels interface is implemented as described below
-3. [optional] the interface tested (also described below)
-
-### Types
-AbstractItemResponseModels offers a single abstract type defining an item response model. 
-
-```julia
-abstract type ItemResponseModel end
+hero:
+    name: AbstractItemResponseModels.jl
+    tagline: An API for item response modelling in Julia
+    actions:
+        - theme: alt
+          text: View on Github
+          link: https://github.com/JuliaPsychometrics/AbstractItemResponseModels.jl  
+        - theme: alt
+          text: Function reference
+          link: /api
+---
 ```
 
-All concrete implementations of item response models must inherit from this abstract type, e.g.
-
-```julia
-struct MyFancyIRTModel <: ItemResponseModel end
+```@raw html
+<div class="vp-doc" style="width:80%; margin:auto">
 ```
 
-### Traits
-Item response models have traits attached to them allowing for flexible dispatch. 
-AbstractItemResponseModels defines a total of 4 such traits.
+# What is AbstractItemResponseModels.jl?
+AbstractItemResponseModels.jl provides a generic interface for item response models in Julia. 
+It is targeted at developers of item response model packages. 
+Packages sucessfully implementing the AbstractItemResponseModels interface will profit from features within [JuliaPsychometrics](https://github.com/JuliaPsychometrics/) such as plotting for their item response models (e.g. via [ItemResponsePlots.jl](https://github.com/JuliaPsychometrics/ItemResponsePlots.jl)).
 
-#### Response type
-Each item response model must define its response type.
-The response type sets the plausible values that the response data can take.
+It is developed by the [JuliaPsychometrics](https://github.com/juliapsychometrics) organization under MIT license. 
 
-The available response types are:
-
-```julia
-abstract type Dichotomous <: ResponseType end
-abstract type Nominal <: ResponseType end
-abstract type Ordinal <: ResponseType end
-abstract type Continuous <: ResponseType end
-```
-
-To define a response type for an item response model, implement the `response_type` function 
-for your model such as
+## Installation 
+The package can be installed via julias package management. 
 
 ```julia
-response_type(::Type{MyFancyIRTModel}) = Dichotomous
+] add AbstractItemResponseModels
 ```
 
-#### Dimensionality
-An item response model defines the dimensionality of both item and person parameters. 
-The dimensionality can be univariate or multivariate.
+## How do I use this package?
+### As a user
 
-```julia
-abstract type Univariate <: Dimensionality end
-abstract type Multivariate <: Dimensionality end
+### As a package developer
+If you want to be able to use features from [JuliaPsychometrics](https://github.com/JuliaPsychometrics/) for your item response modelling package, you are required to implement the AbstractItemResponseModels.jl interface. The API consists of a set of [types](/references/types), [traits](/references/traits), and [methods](/references/methods). 
+
+```@raw html
+</div>
 ```
-
-Define the person and item dimensionality of your model by specifying the `person_dimensionality` 
-and `item_dimensionality` function respectively.
-
-```julia
-person_dimensionality(::Type{MyFancyIRTModel}) = Multivariate
-item_dimensionality(::Type{MyFancyIRTModel}) = Univariate
-```
-
-#### Estimation type
-Defining an estimation type allows dispatching based on the type of parameter estimation in 
-an item response model. AbstractItemResponseModels differentiates between point estimation 
-(e.g. Maximum Likelihood Estimation) and sampling based estimation such as Markov Chain Monte 
-Carlo Methods).
-
-```julia
-abstract type PointEstimate <: EstimationType end
-abstract type SamplingEstimate <: EstimationType end
-```
-
-The estimation type can be defined for a model via the `estimation_type` function.
-
-```julia
-estimation_type(::Type{MyFancyIRTModel}) = PointEstimate
-```
-
-### Functions
-Implementing the AbstractItemResponseModels interface requires defining methods for the 
-generic functions provided in this package.
-
-First a item response function must be provided by extending the `irf` generic function.
-
-```julia
-irf(model::ItemResponseModel, theta, i, y)
-```
-
-Further an item information function must be defined,
-
-```julia
-iif(model::ItemResponseModel, theta, i, y)
-```
-
-An item response model is fitted to data by a `fit` function,
-
-```julia
-fit(::Type{<:ItemResponseModel}, data, args...; kwargs...)
-```
-
-If applicable, an expected score function and an information function must be provided.
-
-```julia
-expected_score(model::ItemResponseModel, theta[, is]; scoring_function)
-information(model::ItemResponseModel, theta[, is]; scoring_function)
-```
-
-## Interface Tests
-AbstractItemResponseModels provides standardized testing of the interface in a separate 
-module `Tests`. 
-
-To test if your implementation of the interface is correct, add the `test_interface` function 
-to your `test/runtests.jl` file as in the example below.
-
-```julia
-using MyFancyIRTPackage
-using Test
-using AbstractItemResponseModels.Tests
-
-@testset "MyFancyIRTPackage" begin
-    test_interface(MyFancyIRTModel, args...; kwargs...) 
-    # additional unit tests...
-end
-```
-
-If you implement multiple models in your package, make sure to call `test_interface` for all
-model types. An example of this can be seen in the [RaschModels.jl](https://github.com/JuliaPsychometrics/RaschModels.jl/blob/main/test/test_interface.jl) package.

@@ -7,7 +7,7 @@ and/or item parameters of the model are unidimensional or multidimensional.
 abstract type Dimensionality end
 
 """
-    item_dimensionality(::T)::Int
+    item_dimensionality(model::ItemResponseModel)
 
 Return the [`Dimensionality`](@ref) of the item parameters of an [`ItemResponseModel`](@ref).
 """
@@ -15,7 +15,7 @@ item_dimensionality(::T) where {T} = item_dimensionality(T)
 item_dimensionality(T::Type) = throw(MethodError(item_dimensionality, (T,)))
 
 """
-    item_dimensionality(::T)::Int
+    person_dimensionality(model::ItemResponseModel)
 
 Return the [`Dimensionality`](@ref) of the person parameters of an [`ItemResponseModel`](@ref).
 """

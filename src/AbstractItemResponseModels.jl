@@ -9,6 +9,7 @@ export expected_score, information
 export fit, predict
 
 export get_item_locations, get_person_locations
+export each_item_index, each_person_index
 
 export ResponseType,
     Dichotomous, Nominal, Ordinal, Continuous, response_type, check_response_type

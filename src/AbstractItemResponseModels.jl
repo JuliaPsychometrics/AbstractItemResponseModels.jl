@@ -7,10 +7,12 @@ export ItemResponseModel
 export irf, iif
 export expected_score, information
 export fit, predict
+
 export get_item_locations, get_person_locations
 
 export ResponseType,
     Dichotomous, Nominal, Ordinal, Continuous, response_type, check_response_type
+
 export Dimensionality, Univariate, Multivariate, item_dimensionality, person_dimensionality
 export EstimationType,
     PointEstimate, SamplingEstimate, DistributionEstimate, estimation_type
@@ -36,6 +38,7 @@ Additionally `T <: ItemResponseModel` must implement the following interface:
 - [`information`](@ref): An information function returning the information of one or
   multiple items, given an ability estimate.
 - [`fit`](@ref): A function fitting an item response model of type `T` to observed data.
+
 - [`get_item_locations`](@ref): A function returning the item locations for a given item.
 - [`get_person_locations`](@ref): A function returning the person locations for a given person.
 """
@@ -235,7 +238,7 @@ Create an iterable object visiting each person index of an item response model.
 """
 function each_person_index(model::ItemResponseModel) end
 
-include("traits/traits.jl")
+include("traits.jl")
 include("tests.jl")
 
 include("deprecated.jl")

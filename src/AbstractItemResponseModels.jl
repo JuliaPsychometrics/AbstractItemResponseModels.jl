@@ -13,7 +13,7 @@ export get_item_locations, get_person_locations
 export ResponseType,
     Dichotomous, Nominal, Ordinal, Continuous, response_type, check_response_type
 
-export Dimensionality, Univariate, Multivariate, item_dimensionality, person_dimensionality
+export dimensionality, item_dimensionality, person_dimensionality
 export EstimationType,
     PointEstimate, SamplingEstimate, DistributionEstimate, estimation_type
 
@@ -24,8 +24,8 @@ An abstract type representing an item response theory model.
 
 Each implementation `T <: ItemResponseModel` must define the following traits:
 - [`response_type`](@ref): A valid [`ResponseType`](@ref)
-- [`person_dimensionality`](@ref): A valid [`Dimensionality`](@ref)
-- [`item_dimensionality`](@ref): A valid [`Dimensionality`](@ref)
+- [`person_dimensionality`](@ref): The number of dimensions for the person parameters
+- [`item_dimensionality`](@ref): The number of dimensions for the item parameters
 - [`estimation_type`](@ref): A valid [`EstimationType`](@ref)
 
 Additionally `T <: ItemResponseModel` must implement the following interface:
@@ -38,7 +38,6 @@ Additionally `T <: ItemResponseModel` must implement the following interface:
 - [`information`](@ref): An information function returning the information of one or
   multiple items, given an ability estimate.
 - [`fit`](@ref): A function fitting an item response model of type `T` to observed data.
-
 - [`get_item_locations`](@ref): A function returning the item locations for a given item.
 - [`get_person_locations`](@ref): A function returning the person locations for a given person.
 """

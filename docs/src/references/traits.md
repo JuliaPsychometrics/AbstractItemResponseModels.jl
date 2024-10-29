@@ -3,26 +3,18 @@
 Implementations of [`ItemResponseModel`](@ref) define four traits that represent certain characteristics of the item response model.
 
 ## Dimensionality
-```@docs; canonical=false
-Dimensionality
-```
-
-Possible values are [`Univariate`](@ref) or [`Multivariate`](@ref).
-
-```@docs; canonical=false
-Univariate
-Multivariate
-```
+The dimensionality of an [`ItemResponseModel`](@ref) is defined as the number of dimensions of item and person parameters. 
 
 ### Item dimensionality
 The item dimensionality defines whether a model has one- or multidimensional item parameters.
+The dimensionality of item parameters is given by an integer.
 
 ```@docs; canonical=false
 item_dimensionality
 ```
 
 ### Person dimensionality
-The person dimensionality defines whether a model has one- or multidimensional person parameters. 
+The person dimensionality defines whether a model has one- or multidimensional person parameters. The dimensionality of person parameters is given by an integer.
 
 ```@docs; canonical=false
 person_dimensionality

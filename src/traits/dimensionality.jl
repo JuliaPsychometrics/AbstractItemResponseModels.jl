@@ -1,15 +1,17 @@
 """
-    Dimensionality
+    dimensionality
 
-The `Dimensionality` of an [`ItemResponseModel`](@ref) defines whether or not the person
-and/or item parameters of the model are unidimensional or multidimensional.
+Return a tuple of the dimensions for an [`ItemResponseModel`](@ref) where the first element
+corresponds to the person dimensionality and the second element to the item dimensionality.
 """
-abstract type Dimensionality end
+dimensionality(::T) where {T} = dimensionality(T)
+dimensionality(T::Type) = (person_dimensionality(T), item_dimensionality(T))
 
 """
     item_dimensionality(model::ItemResponseModel)
 
-Return the [`Dimensionality`](@ref) of the item parameters of an [`ItemResponseModel`](@ref).
+Return the number of dimensions for the item parameters of an [`ItemResponseModel`](@ref) as
+an integer.
 """
 item_dimensionality(::T) where {T} = item_dimensionality(T)
 item_dimensionality(T::Type) = throw(MethodError(item_dimensionality, (T,)))
@@ -17,7 +19,8 @@ item_dimensionality(T::Type) = throw(MethodError(item_dimensionality, (T,)))
 """
     person_dimensionality(model::ItemResponseModel)
 
-Return the [`Dimensionality`](@ref) of the person parameters of an [`ItemResponseModel`](@ref).
+Return the number of dimensions for the person parameters of an [`ItemResponseModel`](@ref)
+as an integer.
 """
 person_dimensionality(::T) where {T} = person_dimensionality(T)
 person_dimensionality(T::Type) = throw(MethodError(person_dimensionality, (T,)))

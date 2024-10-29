@@ -238,7 +238,7 @@ Create an iterable object visiting each person index of an item response model.
 """
 function each_person_index(model::ItemResponseModel) end
 
-include("traits.jl")
+include("traits/traits.jl")
 include("tests.jl")
 
 include("deprecated.jl")

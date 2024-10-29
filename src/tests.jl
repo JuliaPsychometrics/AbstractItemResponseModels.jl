@@ -240,7 +240,7 @@ out_type(::Type{SamplingEstimate}) = AbstractVector{<:Real}
 """
     FakeIRM{RT<:ResponseType,PD<:Dimensionality,ID<:Dimensionality}
 
-A minimal implementation of [`ItemReponseModel`](@ref) for interface testing.
+A minimal implementation of [`ItemResponseModel`](@ref) for interface testing.
 """
 struct FakeIRM{RT<:ResponseType,ID,PD,ET<:EstimationType} <: ItemResponseModel
     betas::Vector{Float64}

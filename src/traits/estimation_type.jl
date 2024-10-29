@@ -31,7 +31,7 @@ abstract type SamplingEstimate <: EstimationType end
 Defines that the parameters of an [`ItemResponseModel`](@ref) are estimated by a distribution.
 Thus, parameters for a model with `estimation_type(model) == DistributionEstimate` are
 probability distributions that implement common interface functions for distributions, e.g.
-[`rand`](@ref), [`mean`](@ref), or [`quantile`](@ref).
+`rand`, `mean`, or `quantile`.
 """
 abstract type DistributionEstimate <: EstimationType end
 

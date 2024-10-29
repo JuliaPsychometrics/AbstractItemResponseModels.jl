@@ -184,7 +184,7 @@ If `item_dimensionality(model) == Multivariate` and `estimation_type(model) == S
 then `get_item_locations` must return a matrix with rows corresponding to the drawn samples
 and columns corresponding to the dimension of the item parameter.
 """
-function get_item_locations end
+function get_item_locations(model::ItemResponseModel, i) end
 
 function get_item_locations(model::ItemResponseModel)
     return [get_item_locations(model, i) for i in each_item_index(model)]
@@ -211,11 +211,11 @@ If `person_dimensionality(model) == Univariate` and `estimation_type(model) == S
 then `get_person_locations` must return a vector of values with the length equal to the number
 of samples drawn.
 
-If `person_dimensionality(model) == Multivariate` and `estimateion_type(model) == SamplingEstimate`
+If `person_dimensionality(model) == Multivariate` and `estimation_type(model) == SamplingEstimate`
 then `get_person_locations` must return a matrix with rows corresponding to the drawn samples
 and columns corresponding to the dimension of the person parameter.
 """
-function get_person_locations end
+function get_person_locations(model::ItemResponseModel, p) end
 
 function get_person_locations(model::ItemResponseModel)
     return [get_person_locations(model, p) for p in each_person_index(model)]
@@ -226,14 +226,14 @@ end
 
 Create an iterable object visiting each item index of an item response model.
 """
-function each_item_index end
+function each_item_index(model::ItemResponseModel) end
 
 """
     each_person_index(model::ItemResponseModel)
 
 Create an iterable object visiting each person index of an item response model.
 """
-function each_person_index end
+function each_person_index(model::ItemResponseModel) end
 
 include("traits/traits.jl")
 include("tests.jl")

@@ -1,7 +1,7 @@
 @testset "Interface Tests" begin
     rtypes = [Dichotomous, Nominal, Ordinal, Continuous]
-    pdims = [Univariate, Multivariate]
-    idims = [Univariate, Multivariate]
+    pdims = [1, 2]
+    idims = [1, 2]
     etypes = [PointEstimate, SamplingEstimate]
 
     @testset "FakeIRM{$rt,$pd,$it,$et}" for (rt, pd, it, et) in Iterators.product(rtypes, pdims, idims, etypes)

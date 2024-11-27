@@ -1,7 +1,8 @@
 name = "AbstractItemResponseModels"
 uuid = "0ab3451c-659c-47cd-a7a9-a2d579e209dd"
 authors = ["Philipp Gewessler", "Tobias Alfers"]
-version = "0.2.0"
+version = "0.3.0"
+
 
 [deps]
 StatsAPI = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
@@ -9,7 +10,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 StatsAPI = "1"
-julia = "1.6"
+julia = "1.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

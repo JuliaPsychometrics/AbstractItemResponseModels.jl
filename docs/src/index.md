@@ -35,9 +35,13 @@ The package can be installed via julias package management.
 
 ## How do I use this package?
 ### As a user
+As a user you do not directly need to interact with AbstractItemResponseModels.jl. 
+Packages that implement the interface defined in this package, however, will all export functions to interact with item response models such as [`irf`](@ref), [`iif`](@ref), [`expected_score`](@ref) or [`information`](@ref). 
+
+For a full list of methods see the [Methods](@ref methods_page) section of the documentation.
 
 ### As a package developer
-If you want to be able to use features from [JuliaPsychometrics](https://github.com/JuliaPsychometrics/) for your item response modelling package, you are required to implement the AbstractItemResponseModels.jl interface. The API consists of a set of [types](/references/types), [traits](/references/traits), and [methods](/references/methods). 
+If you want to be able to use features from [JuliaPsychometrics](https://github.com/JuliaPsychometrics/) for your item response modelling package, you are required to implement the AbstractItemResponseModels.jl interface. The API consists of a set of [Types](@ref types_page), [Traits](@ref traits_page), and [Methods](@ref methods_page). 
 
 ```@raw html
 </div>

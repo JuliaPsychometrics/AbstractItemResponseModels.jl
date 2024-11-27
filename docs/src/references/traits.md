@@ -1,4 +1,4 @@
-# Traits
+# [Traits](@id traits_page)
 
 Implementations of [`ItemResponseModel`](@ref) define four traits that represent certain characteristics of the item response model.
 

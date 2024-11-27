@@ -1,4 +1,4 @@
-# Methods
+# [Methods](@id methods_page)
 
 ## Item response functions
 ```@docs; canonical=false
